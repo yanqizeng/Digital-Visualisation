@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>gdp map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet'
+        href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #my-div {
+            display: block;
+        }
+
+        #my-div2 {
+            display: none;
+        }
+
+        .mapboxgl-ctrl-geocoder {
+            position: absolute;
+            top: 5px;
+            right: 500px;
+        }
+
+        .blink {
+            color: rgb(80, 162, 156);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .publink {
+            color: rgb(193, 123, 62);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .map-overlay {
+            font: 10px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 30%;
+            top: 0;
+            right: 0;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay-left {
+            font: 10px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 25%;
+            top: 0;
+            left: 3%;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay-left .map-overlay-slider {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+
+        .map-overlay table {
+            border: none;
+            width: 100%;
+
+        }
+
+        .map-overlay h2 {
+            line-height: 24px;
+            display: block;
+            margin: 0 0 10px;
+        }
+
+        .map-overlay label {
+            font: 14px/18px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            vertical-align: bottom;
+            margin: 0;
+            padding: 0;
+        }
+
+        .map-overlay input {
+            display: inline;
+            vertical-align: middle;
+            margin: 5px;
+            padding: 0;
+        }
+
+        .map-overlay p.credit {
+            margin: 0px 0 0 0;
+            padding: 0;
+        }
+
+        .map-overlay2 {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 15%;
+            top: 60%;
+            right: 0;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay2 .map-overlay-inner2 {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay2 table {
+            border: none;
+            width: 100%;
+        }
+
+        .map-overlay2 h2 {
+            line-height: 24px;
+            display: block;
+            margin: 0 0 10px;
+        }
+
+        .map-overlay2 h3 {
+            line-height: 24px;
+            display: block;
+            margin: 0 0 10px;
+            font-size: 13px;
+            font-weight: normal;
+
+        }
+
+        /* .map-overlay3 {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 30%;
+            top: 60%;
+            right: 0;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay3 .map-overlay-inner3 {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay3 table {
+            border: none;
+            width: 100%;
+        }
+
+        .map-overlay3 h2 {
+            line-height: 24px;
+            display: block;
+            margin: 0 0 10px;
+        } */
+    </style>
+</head>
+
+<body>
+
+    <div id='map'></div>
+    <div id='geocoder'></div>
+
+    <div class='map-overlay-left'>
+        <div class='map-overlay-slider'>
+            <h2>Year</h2>
+            <table><tr><td>
+            <input id='slider' type='range' min='0' max='4' step='1' value='0' list='tickmarks' />
+            <datalist id="tickmarks">
+              <option value="0" label="2001">
+              <option value="1" label="2006">
+              <option value="2" label="2011">
+              <option value="3" label="2016">
+              <option value="4" label="2021">
+              </datalist>
+             </td>
+             <td>
+              <label id='year'>2001</label>
+             </td>
+             </tr></table>
+             <p class="credit">GDP data: <a href="https://www.bea.gov/">Bureau of Economic Analysis, U.S. Department of Commerce</a>. </p>
+        </div>
+    </div>
+
+
+
+    <div class='map-overlay'>
+
+        <div class='map-overlay-inner'>
+            <h1> U.S. Gross Domestic Product 2001-2021 by Metropolitan Statistical Area</h1>
+            <table>
+                <tr>
+                    <td>
+                        <input type="radio" name="layers" id="layer1" value="Employment" checked><label>GDP2D
+                            &nbsp;
+                            &nbsp;</label>
+                        <input type="radio" name="layers" id="layer2" value="Residents"><label>GDP3D</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="cityfly">&nbsp;&nbsp;Zoom To:<br> &nbsp;
+                            <a href="#" class="blink" id="California">California<br></a> &nbsp;
+                            <a href="#" class="blink" id="Texas">Texas<br></a>&nbsp;
+                            <a href="#" class="blink" id="NewYork">New York<br></a>&nbsp;
+                            <a href="#" class="blink" id="Florida">Florida<br></a> &nbsp;
+                            <a href="#" class="blink" id="Illinois">Illinois<br></a> &nbsp;
+                            <a href="#" class="blink" id="Pennsylvania">Pennsylvania<br></a> &nbsp;
+                            <a href="#" class="blink" id="Ohio">Ohio<br></a>&nbsp;
+                            <a href="#" class="blink" id="Georgia">Georgia<br></a>&nbsp;
+                            <a href="#" class="blink" id="NewJersey">New Jersey<br></a>&nbsp;
+                            <a href="#" class="blink" id="Washington">Washington<br></a>&nbsp
+
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            <!-- <p class="credit">&nbsp;&nbsp;Data: Cultural Infrastructure Map, Greater London Authority (GLA) </p> -->
+        </div>
+    </div>
+
+     <div id='my-div' class='map-overlay2'>
+        <div class='map-overlay-inner2'>
+            <h2 id="laname">Hover over a MSA</h2>
+            <h3 id="wardcount1">GDP2001：</h3>
+            <h3 id="wardcount2">GDP2006：</h3>
+            <h3 id="wardcount3">GDP2011：</h3>
+            <h3 id="wardcount4">GDP2016：</h3>
+            <h3 id="wardcount5">GDP2021：</h3>
+        </div>
+    </div>
+
+    <div id='legend' style='position: absolute; bottom: 50px; left: 50px; padding: 10px; background: white;'></div>
+
+        <script>
+
+    // Create an array of the available data years
+    var years = [
+        '01',
+        '06',
+        '11',
+        '16',
+        '21'
+    ];
+
+            mapboxgl.accessToken = 'pk.eyJ1IjoidWNmbnNobyIsImEiOiJjbGQxbGV2eXAyN25lM3Budm1ncWF0bHRkIn0.NS58Kzy_i2MZqFQGtESBpQ';
+
+            // Load a new map in the 'map' HTML div
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/ucfnsho/clhi58tpm01gw01qy9bo8gged',
+                center: [-90.46, 40.11],
+                zoom: 4,
+                pitch: 15
+
+            });
+            // Load a location search bar in the 'geocoder' HTML div
+            var geocoder = new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl,
+                zoom: 13,
+            });
+
+            map.addControl(geocoder);
+            geocoder.on('result', function (e) {
+                // get the center coordinates of the search result
+                var center = e.result.center;
+
+                // use the flyTo method to move the map to the center coordinates and set the zoom level
+                map.flyTo({ center: center, zoom: 13 });
+            });
+
+
+            map.on('load', function () {
+                // Set global light properties which influence 3D layer shadows
+                map.setLight({ color: "#fff", intensity: 0.35, position: [1.15, 210, 30] });
+
+                // Add standard navigation control
+                var nav = new mapboxgl.NavigationControl();
+                map.addControl(nav, 'top-left');
+
+                            // This is the main function that runs when the user changes the data year
+
+
+                
+
+            function setYear2D(year) {
+                document.getElementById('year').textContent = years[year];  // 设置标签为正确的年份
+
+                var colorProp = "gdp" + years[year];
+
+                var colorStops = [[5000000, '#d6f5ff'],
+                    [10000000, '#B0E0E6'],
+                    [20000000, '#69cbf5'],
+                    [30000000, '#1E90FF'],
+                    [40000000, '#2e96dc'],
+                    [50000000, '#00479e']
+                ];
+
+
+                map.setPaintProperty('gdp2D', 'fill-color', {
+                    property: colorProp,
+                    type: 'exponential',
+                    stops: colorStops
+                });
+            }
+
+
+            function setYear(year) {
+                document.getElementById('year').textContent = years[year];  // 设置标签为正确的年份
+
+                var colorProp = "gdp" + years[year];
+                var heightProp = "gdp" + years[year];
+
+                var colorStops = [        [5000000, '#d6f5ff'],
+                    [10000000, '#B0E0E6'],
+                    [20000000, '#69cbf5'],
+                    [30000000, '#1E90FF'],
+                    [40000000, '#2e96dc'],
+                    [50000000, '#00479e']
+                ];
+
+                var heightExpression = ['/', ['number', ['get', heightProp], 10000000], 2000];
+                //['/', ['number', ['get', heightProp]], 10000000];
+
+                map.setPaintProperty('gdp', 'fill-extrusion-color', {
+                    property: colorProp,
+                    type: 'exponential',
+                    stops: colorStops
+                });
+
+                map.setPaintProperty('gdp', 'fill-extrusion-height', heightExpression);
+            }
+
+
+                //Add the fill layer
+                // map.addLayer({
+                //     id: 'state',
+                //     type: 'fill',
+                //     source: {
+                //         type: 'vector',
+                //         url: 'mapbox://ucfnsho.0cohczgz'
+                //     },
+                //     'source-layer': 'states_line-7b92ay',
+                //     'layout': {
+                //         'visibility': 'visible'
+                //     },
+                //     paint: {
+                //         'fill-color': '#F4A460',
+                //         'fill-opacity': 0.95
+                //     }
+                // });
+
+
+                //Add the fill layer
+                // map.addLayer({
+                //     id: 'ward',
+                //     type: 'fill',
+                //     source: {
+                //         type: 'vector',
+                //         url: 'mapbox://ucfnsho.b1fqglw7'
+                //     },
+                //     'source-layer': 'msa_withgdp-71wlfx',
+                //     'layout': {
+                //         'visibility': 'visible'
+                //     },
+                //     paint: {
+                //         'fill-color': '#F4A460',
+                //         'fill-opacity': 0.95
+                //     }
+                // });
+
+                map.addLayer({
+                    id: 'gdp2D',
+                    type: 'fill',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://ucfnsho.4hq7cp8f'
+                    },
+                    'source-layer': 'msa_withgdp2-5yy8gb',
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    paint: {
+                        'fill-color': {
+                            property: 'gdp21',
+                            type: 'exponential',
+                            stops: [
+                                [5000000, '#d6f5ff'],
+                                [10000000, '#B0E0E6'],
+                                [20000000, '#69cbf5'],
+                                [30000000, '#1E90FF'],
+                                [40000000, '#2e96dc'],
+                                [50000000, '#00479e']]  
+                    }}
+                })   
+
+                
+//                 var legend = new MapboxGLLegend({
+//   layer: 'gdp2D', // 要添加图例的图层 ID
+//   types: ['fill'], // 图例类型，例如：填充、边框、图标等
+//   title: 'My Legend', // 图例标题
+//   description: 'This is a description of my legend.', // 图例描述
+//   body: [{color: '#d6f5ff', label: '- 500k'}, {color: '#B0E0E6', label: '500k - 1000k'}, {color: '#69cbf5', label: '1000k - 2000k'}
+//   , {color: '#1E90FF', label: '2000k - 3000k'}, {color: '#2e96dc', label: '3000k - 4000k'}, {color: '#00479e', label: '4000k - 5000k'}] // 图例内容
+// });
+
+// map.addControl(legend,'bottom-right');
+
+
+
+
+                // Load the 3D pub count layer as a fill-extrusion type
+                map.addLayer({
+                    id: 'gdp',
+                    type: 'fill-extrusion',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://ucfnsho.4hq7cp8f'
+                    },
+                    'source-layer': 'msa_withgdp2-5yy8gb',
+                    'layout': {
+                        'visibility': 'none'
+                    },
+                    paint: {
+                        'fill-extrusion-color': {
+                            property: 'gdp21',
+                            type: 'exponential',
+                            stops: [
+                                [5000000, '#d6f5ff'],
+                                [10000000, '#B0E0E6'],
+                                [20000000, '#69cbf5'],
+                                [30000000, '#1E90FF'],
+                                [40000000, '#2e96dc'],
+                                [50000000, '#00479e']]
+                        
+                    },
+
+                        'fill-extrusion-height': ['/', ['number', ['get', 'gdp21'], 10000000], 2000],
+
+                        //'fill-extrusion-base': 10,
+                        'fill-extrusion-opacity': 0.95,
+                        'fill-extrusion-opacity-transition': {
+                            duration: 1000,
+                            delay: 0
+                        }
+                    }
+
+                });
+
+                ///not sure what it is
+                //  // Add the borough line highlight layer.
+
+                map.addLayer({                 
+                    id: 'stateline',
+                    type: 'line',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://ucfnsho.0cohczgz'
+                    },
+                    'source-layer': 'states_line-7b92ay', 
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    paint: {
+                        'line-color': '#B0E0E6',
+                        'line-width': 2
+                    },
+                });
+
+                // Add the line highlight layer. This layer has a filter, which initially is empty.
+                map.addLayer({                  
+                    id: 'lahighlight',
+                    type: 'line',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://ucfnsho.4hq7cp8f' 
+                    },
+                    'source-layer': 'msa_withgdp2-5yy8gb', 
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    paint: {
+                        'line-color': '#adf',
+                        'line-width': 4
+                    },
+                    filter: ['==', 'NAME', 'empty']
+                });
+
+                map.on('mousemove', 'gdp2D', function (e) {       
+                    var la = map.queryRenderedFeatures(e.point, {   
+                        // This queries whether the mouse is over an object in the ward layer
+                        layers: ['gdp2D']
+                    });
+
+                    if (la.length == 1) {   
+                        map.setFilter('lahighlight', ['==', 'NAME', la[0].properties.GeoName]);
+                        console.log(la[0].properties.GeoName);
+
+                        document.getElementById('laname').innerHTML = la[0].properties.GeoName;
+
+                        document.getElementById('wardcount1').innerHTML = "GDP2001: " + la[0].properties.gdp01;
+                        document.getElementById('wardcount2').innerHTML = "GDP2006: " + la[0].properties.gdp06;
+                        document.getElementById('wardcount3').innerHTML = "GDP2011: " + la[0].properties.gdp11;
+                        document.getElementById('wardcount4').innerHTML = "GDP2016: " + la[0].properties.gdp16;
+                        document.getElementById('wardcount5').innerHTML = "GDP2021: " + la[0].properties.gdp21;
+                        console.log(la[0].id);
+                        console.log(la);
+
+                    } else {
+                        map.setFilter('lahighlight', ['==', 'NAME', 'null']);
+                        console.log('No features');
+                        document.getElementById('laname').innerHTML = "Hover over a MSA";
+                        document.getElementById('wardcount1').innerHTML = "GDP2001:";
+                        document.getElementById('wardcount2').innerHTML = "GDP2006:";
+                        document.getElementById('wardcount3').innerHTML = "GDP2011:"; 
+                        document.getElementById('wardcount4').innerHTML = "GDP2016:";
+                        document.getElementById('wardcount5').innerHTML = "GDP2021:"; 
+                    }
+
+                 });
+
+                // This is the main event listner which is triggered when the mouse moves
+                map.on('mousemove', 'gdp', function (e) {       
+                    var la = map.queryRenderedFeatures(e.point, {   
+                        // This queries whether the mouse is over an object in the ward layer
+                        layers: ['gdp']
+                    });
+
+                    if (la.length == 1) {   
+
+                        map.setFilter('lahighlight', ['==', 'NAME', la[0].properties.GeoName]);
+                        console.log(la[0].properties.GeoName);
+
+                        document.getElementById('laname').innerHTML = la[0].properties.GeoName;
+
+                        document.getElementById('wardcount1').innerHTML = "GDP2001: " + la[0].properties.gdp01;
+                        document.getElementById('wardcount2').innerHTML = "GDP2006: " + la[0].properties.gdp06;
+                        document.getElementById('wardcount3').innerHTML = "GDP2011: " + la[0].properties.gdp11;
+                        document.getElementById('wardcount4').innerHTML = "GDP2016: " + la[0].properties.gdp16;
+                        document.getElementById('wardcount5').innerHTML = "GDP2021: " + la[0].properties.gdp21;
+                        console.log(la[0].id);
+                        console.log(la);
+
+                    } else {
+                        map.setFilter('lahighlight', ['==', 'NAME', 'null']);
+                        console.log('No features');
+                        document.getElementById('laname').innerHTML = "Hover over a MSA";
+                        document.getElementById('wardcount1').innerHTML = "GDP2001:";
+                        document.getElementById('wardcount2').innerHTML = "GDP2006:";
+                        document.getElementById('wardcount3').innerHTML = "GDP2011:"; 
+                        document.getElementById('wardcount4').innerHTML = "GDP2016:";
+                        document.getElementById('wardcount5').innerHTML = "GDP2021:"; 
+                    }
+
+                 });
+
+
+
+                //Event listener for layer switch
+                document.getElementById("layer1").addEventListener("click", function () {
+
+                    map.setLayoutProperty('gdp2D', 'visibility', 'visible');
+                    map.setLayoutProperty('gdp', 'visibility', 'none');
+                    map.setLayoutProperty('stateline', 'visibility', 'visible');
+                    map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+                    document.getElementById('my-div').style.display = 'block';
+                    document.getElementById('my-div2').style.display = 'block';
+
+                });
+
+                document.getElementById("layer2").addEventListener("click", function () {
+
+                    map.setLayoutProperty('gdp2D', 'visibility', 'none');
+                    map.setLayoutProperty('gdp', 'visibility', 'visible');
+                    map.setLayoutProperty('stateline', 'visibility', 'none');
+                    map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+                    document.getElementById('my-div').style.display = 'block';
+                    document.getElementById('my-div2').style.display = 'block';
+
+
+                });
+
+
+                document.getElementById('slider').addEventListener('input', function(e) {
+                var year = parseInt(e.target.value);
+                
+                setYear(year);
+                setYear2D(year);
+
+                });
+
+                
+                //Event listener for the zoom to buttons created using a for loop and switch case statement to set lat and long
+                var x = document.getElementsByClassName('blink');
+                var i;
+
+                
+                for (i = 0; i < x.length; i++) {
+                    x[i].addEventListener('click', function (e) {
+
+                        var lat, long;
+
+                        switch (e.target.id) {
+                            case "California": long = -119.74; lat = 36.48; break;
+                            case "Texas": long = -99.16; lat = 31.57; break;
+                            case "NewYork": long = -75.98; lat = 42.90; break;
+                            case "Florida": long = -81.78; lat = 27.90; break;
+                            case "Illinois": long = -89.45; lat = 40.24; break;
+                            case "Pennsylvania": long = -77.75; lat = 40.90; break;
+                            case "Ohio": long = -82.86; lat = 40.29; break;
+                            case "Georgia": long = -83.40; lat = 32.70; break;
+                            case "NewJersey": long = -74.47; lat = 40.19; break;
+                            case "Washington": long =  -120.07; lat = 47.34; break;
+                            
+                        }
+
+                        map.flyTo({
+                            center: [long, lat],
+                            zoom: 6.5,
+                            speed: 0.4,
+                            pitch: 30
+                        });
+                    });
+                }
+
+
+                
+                    // colors and values for 'gdp2D' layer
+                    var gdp2DGrades = ["0~5m"+ "<br>", "10m~20m"+ "<br>", "20m~30m"+ "<br>", "30m~40m"+ "<br>", "40m~50m"+ "<br>", "50m~"+ "<br>"];
+                    var gdp2DColors = ['#d6f5ff', '#B0E0E6', '#69cbf5', '#1E90FF', '#2e96dc', '#00479e'];
+
+
+
+                    var legend = document.getElementById('legend');
+                    legend.style.width = '210px';  // Set the desired width, for example, 200px
+                    legend.style.height = '180px';
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '25px';
+                            box.style.height = '20px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(gdp2DColors, gdp2DGrades, 'GDP:');
+                    //addLegendRow(gdpColors, gdpGrades, 'Population Change:');
+
+
+                
+
+
+});
+
+
+
+        </script>
+
+</body>
+
+</html>
