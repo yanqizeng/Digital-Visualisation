@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>U.S. State 2020 data</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/dimple/2.3.0/dimple.latest.min.js"></script> 
+
+
+
+<!-- ====== Style and Layout ====== -->
+<style>
+
+    body { margin: 0; padding: 0; }
+
+    #title {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 15px;
+        margin-left: 15px;
+        opacity: 0.8;
+    }
+
+    #title h2 {
+        line-height: 24px;
+        margin: 0;
+    }
+
+    #title p.credit {
+       margin: 10px 0 0 0;
+       padding: 0;
+    }
+    
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; };
+
+
+    
+</style>
+
+<style>   
+
+    #chartContainer p {margin-left: 60px; margin-bottom: 5px; margin-top: 0; padding: 0;}
+    #charttitle {font: bold 15px  Verdana, sans-serif;}
+
+    #charttitle h1 {font: regular 9px  Verdana, sans-serif;}
+
+    #chartContainer_02 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 1080px; 
+        margin-top: 538px; 
+        margin-left: 500px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+
+    #legend_00 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_01 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_02 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_03 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_04 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_05 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_06 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_07 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #legend_08 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 645px; 
+        margin-left: 255px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    
+
+
+
+
+</style>
+
+<style>   
+
+    .map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    position: absolute;
+    width: 57%;
+    top: 723px;
+    left: 600px;
+    padding: 10px;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #ffffff;
+    box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+</style>
+
+
+<style>
+    #my-div {display: block;}
+
+    #mousemovetitle {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top:552px; 
+        margin-left: 15px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #mapoverlay_01 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 105px; 
+        margin-left: 15px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+
+    #mapoverlay_02 {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 200px; 
+        margin-top: 605px; 
+        margin-left: 15px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+</style>
+
+
+
+</head>
+<!-- END Style and Layout -->
+
+
+<body>
+<!-- ====== Title and Data Sources ====== -->
+    <div id="map"></div>
+    
+    <div id="title">
+        <h2>2020 U.S. State Data</h2>
+         <!-- <p class="credit">Journey Plans Data: <a href="https://api.tfl.gov.uk/">Transport for London API</a>.</p> -->
+         <p class="credit">U.S. State Data: <a href="https://data.census.gov/">Census Bureau Data</a>.</p>
+    </div> 
+
+    <!-- Line chart Title and Content -->
+    <div id="chartContainer">
+        <!-- <p id="charttitle">Text...</p>  
+
+        <p id="charttitle h1">Text...</p>   -->
+        
+    </div>
+
+    <div id="chartContainer_02" style="text-align: center" >
+        <h> U.S. State Population 2020</h>
+    </div>
+
+    <div id="mousemovetitle">State Name</div>
+
+    <div id="mapoverlay_01" >
+        <h4> An overview of the data of the states in the United States in terms of population, income, education, etc. in 2020 </h4>
+        <!-- <table>
+            <tr>
+                <td>
+                    <input type="radio" name="layers" id="2Dlayer"  checked><label>2D
+                        &nbsp;
+                        &nbsp;</label>
+                    <input type="radio" name="layers" id="3Dlayer" ><label>3D</label>
+                </td>
+            </tr>
+        </table> -->
+
+        <table>
+            <tr>
+                <td>
+                    <p class="stateTopics">&nbsp;&nbsp;Select Topics:<br> &nbsp;
+                        <a href="#" class="blink" id="Topic1">Population<br></a> &nbsp;
+                        <a href="#" class="blink" id="Topic2">Income<br></a>&nbsp;
+                        <a href="#" class="blink" id="Topic3">Education<br></a>&nbsp;
+                        <a href="#" class="blink" id="Topic4">Employment<br></a> &nbsp;
+                        <a href="#" class="blink" id="Topic5">Housing<br></a> &nbsp;
+                        <a href="#" class="blink" id="Topic6">Health<br></a> &nbsp;
+                        <a href="#" class="blink" id="Topic7">Business<br></a>&nbsp;
+                        <a href="#" class="blink" id="Topic8">Families<br></a>&nbsp;
+                        <a href="#" class="blink" id="Topic9">Race<br></a>&nbsp
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="mapoverlay_02">
+        <h id="wardcount1">Population：<br></h>
+        <h id="wardcount2">Income：<br></h>
+        <h id="wardcount3">Education：<br></h>
+        <h id="wardcount4">Employment：<br></h>
+        <h id="wardcount5">Housing：<br></h>
+        <h id="wardcount6">Health：<br></h>
+        <h id="wardcount7">Business：<br></h>
+        <h id="wardcount8">Families：<br></h>
+        <h id="wardcount9">Race：<br></h>
+
+    </div>
+
+    <div id="legend_00"></div>
+    <div id="legend_01"></div>
+    <div id="legend_02"></div>
+    <div id="legend_03"></div>
+    <div id="legend_04"></div>
+    <div id="legend_05"></div>
+    <div id="legend_06"></div>
+    <div id="legend_07"></div>
+    <div id="legend_08"></div>
+
+    
+<!-- END Title and Data Sources -->
+
+
+
+
+    
+<!-- ====== Mapping ====== -->
+<script>
+    
+// 1 BASIC MAP: U.S. state
+  // Setting background
+  mapboxgl.accessToken = 'pk.eyJ1IjoieWFucWl6ZW5nIiwiYSI6ImNsZGJsOHIyaTAxb2wzbmxqY2V5a2xlYmYifQ.8ovksydQmOUs26VjPcy3Mg';
+
+        // Load a new map in the 'map' HTML div
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/yanqizeng/clhkvgote01ng01pg9pne442v',
+            center: [-98.15, 33.5], // starting position [lng, lat]
+            zoom: 3.6 // starting zoom
+        });
+    
+  map.addControl(new mapboxgl.NavigationControl()); //Adds zoom control
+
+
+  map.on('load', function() {
+
+  // Set global light properties which influence 3D layer shadows
+  map.setLight({ color: "#fff", intensity: 0.35, position: [1.15, 210, 30] });
+
+
+
+
+
+//   ---------- 2D shipfile ----------
+
+  //   Add U.S. state shipfile <<< Topic: MouseMove >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'MouseMove',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.8pdu49wf' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020data-3law2s', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_F',
+                            type: 'exponential',
+                            stops: [
+                                [200000, '#EEF1FF'],
+                                [700000, '#D2DAFF'],
+                                [2000000, '#AAC4FF'],
+                                [6000000, '#47B5FF'],
+                                [9000000, '#4649FF'],
+                                [130000000, '#1D1CE5']] 
+                },
+                'fill-extrusion-opacity': 0,
+                // 'fill-stroke-color': '#E6E6FA'
+
+                }
+    });
+
+  //   Add U.S. state shipfile <<< Topic: Population >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Population2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.8pdu49wf' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020data-3law2s', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_P',
+                            type: 'exponential',
+                            stops: [
+                                [200000, '#E8F9FD'],
+                                [700000, '#B3E8E5'],
+                                [2000000, '#82DBD8'],
+                                [6000000, '#3BACB6'],
+                                [10000000, '#2F8F9D'],
+                                [40000000, '#006778']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                // 'fill-stroke-color': '#E6E6FA'
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Income >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Income2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.58uys5s6' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020sameValue-4p1rdj', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_1',
+                            type: 'exponential',
+                            stops: [
+                                [20000, '#E9F8F9'],
+                                [55000, '#97DEFF'],
+                                [65000, '#62CDFF'],
+                                [72000, '#19A7CE'],
+                                [80000, '#19A7CE'],
+                                [85000, '#146C94']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                // 'fill-stroke-color': '#E6E6FA'
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Education >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Education2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.58uys5s6' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020sameValue-4p1rdj', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_2',
+                            type: 'exponential',
+                            stops: [
+                                [0.211, '#ECF2FF'],
+                                [0.281, '#C0EEF2'],
+                                [0.331, '#62CDFF'],
+                                [0.381, '#537FE7'],
+                                [0.421, '#2F58CD'],
+                                [0.611, '#3E54AC']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Employment >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Employment2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.58uys5s6' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020sameValue-4p1rdj', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_3',
+                            type: 'exponential',
+                            stops: [
+                                [0.311, '#EEF1FF'],
+                                [0.481, '#D2DAFF'],
+                                [0.551, '#AAC4FF'],
+                                [0.581, '#47B5FF'],
+                                [0.611, '#4649FF'],
+                                [0.641, '#3E54AC']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Housing >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Housing2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.58uys5s6' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020sameValue-4p1rdj', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_4',
+                            type: 'exponential',
+                            stops: [
+                                [270000, '#EEF1FF'],
+                                [1000000, '#D2DAFF'],
+                                [2000000, '#AAC4FF'],
+                                [3000000, '#537FE7'],
+                                [4000000, '#4649FF'],
+                                [10000000, '#1D1CE5']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Health >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Health2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.58uys5s6' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020sameValue-4p1rdj', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_5',
+                            type: 'exponential',
+                            stops: [
+                                [0.021, '#E9F8F9'],
+                                [0.051, '#E5E0FF'],
+                                [0.061, '#8EA7E9'],
+                                [0.071, '#7286D3'],
+                                [0.085, '#645CBB'],
+                                [0.10, '#13005A']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Business >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Business2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.58uys5s6' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020sameValue-4p1rdj', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_6',
+                            type: 'exponential',
+                            stops: [
+                                [2350, '#E9F8F9'],
+                                [20000, '#E5E0FF'],
+                                [100000, '#8EA7E9'],
+                                [200000, '#7286D3'],
+                                [300000, '#645CBB'],
+                                [8000000, '#13005A']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Family >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Family2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.8pdu49wf' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020data-3law2s', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_F',
+                            type: 'exponential',
+                            stops: [
+                                [200000, '#F1F6F5'],
+                                [700000, '#E5E0FF'],
+                                [2000000, '#BFACE2'],
+                                [6000000, '#8D9EFF'],
+                                [9000000, '#8D72E1'],
+                                [130000000, '#C47AFF']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                // 'fill-stroke-color': '#E6E6FA'
+
+                }
+    });
+
+
+  //   Add U.S. state shipfile <<< Topic: Race >>>
+  map.addLayer({                  //Add the fill layer. It is not visible (opacity 0) and is used only as the basis of the hover selection
+            id: 'Race2020',
+            type: 'fill-extrusion',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.8pdu49wf' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'US_state_2020data-3law2s', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'fill-extrusion-color': {
+                    property: 'US_state_R',
+                            type: 'exponential',
+                            stops: [
+                                [15500, '#E5E0FF'],
+                                [100000, '#F7E2E2'],
+                                [300000, '#BFACE2'],
+                                [400000, '#BFACE2'],
+                                [1000000, '#A66CFF'],
+                                [62000000, '#9145B6']] 
+                },
+                'fill-extrusion-opacity': 0.8,
+                // 'fill-stroke-color': '#E6E6FA'
+
+                }
+    });
+
+
+
+
+//  ========  name of U.S. state  =========
+  map.addLayer({          
+        'id': 'STATENAME',
+        'type': 'symbol',        
+        'source': 'MouseMove',  // Same as above id
+        'source-layer': 'US_state_2020data-3law2s', // name of tilesets
+        'layout': {
+            'text-field': '{NAME}',   // Based on the data in the column above
+            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+            'text-size': {
+                stops: [[8, 12], [12.5, 12], [12.6, 30], [16, 50]]
+            }
+        },
+        'paint': {
+            'text-color': 'rgba(0,0,0,0.6)'
+        }
+    });
+
+
+//  =========  U.S. State Line  ========== 
+    map.addLayer({                  
+                    id: 'lahighlight',
+                    type: 'line',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://yanqizeng.8pdu49wf' 
+                    },
+                    'source-layer': 'US_state_2020data-3law2s', 
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    paint: {
+                        'line-color': '#00FFFF',
+                        'line-width': 5
+                    },
+                    filter: ['==', 'NAME', 'empty']
+                });
+
+
+//   =========  Mousemove  ==========                
+  //   Mouseover event    <<< Topic: Family >>>
+    map.on('mousemove','MouseMove', function(e) {       // This is the main event listner which is triggered when the mouse moves
+          var la = map.queryRenderedFeatures(e.point, {   // This queries whether the mouse is over an object in the LocalAuthorities layer
+            layers: ['MouseMove']
+          });
+
+
+        if (la.length==1) {   // This if statement is run when the mouse is over a local authority
+
+        map.setFilter('lahighlight', ['==','NAME',la[0].properties.NAME]);  // Filter the lahighlight layer to show the local authority outline
+        console.log(la[0].properties.NAME);
+
+        document.getElementById('mousemovetitle').innerHTML = la[0].properties.NAME; // Change the name in the top left box to show the local authority name
+        
+        document.getElementById('wardcount1').innerHTML = "Population: " + la[0].properties.US_state_P+ "<br>";
+        document.getElementById('wardcount2').innerHTML = "Income: " + la[0].properties.US_state_I+ "<br>";
+        document.getElementById('wardcount3').innerHTML = "Education: " + la[0].properties.US_state_E+ "<br>";
+        document.getElementById('wardcount4').innerHTML = "Employment: " + la[0].properties.US_state_1+ "<br>";
+        document.getElementById('wardcount5').innerHTML = "Housing: " + la[0].properties.US_state_H+ "<br>";
+        document.getElementById('wardcount6').innerHTML = "Health: " + la[0].properties.US_state_2+ "<br>";
+        document.getElementById('wardcount7').innerHTML = "Business: " + la[0].properties.US_state_B+ "<br>";
+        document.getElementById('wardcount8').innerHTML = "Families: " + la[0].properties.US_state_F+ "<br>";
+        document.getElementById('wardcount9').innerHTML = "Race: " + la[0].properties.US_state_R+ "<br>";
+        console.log(la[0].id);
+        console.log(la);
+
+        } else {
+        map.setFilter('lahighlight', ['==','NAME','null']);
+        console.log('No features');
+        document.getElementById('mousemovetitle').innerHTML = "State Name" ;
+        document.getElementById('wardcount1').innerHTML = "Population: "+ "<br>";
+        document.getElementById('wardcount2').innerHTML = "Income: "+ "<br>";
+        document.getElementById('wardcount3').innerHTML = "Education: "+ "<br>";
+        document.getElementById('wardcount4').innerHTML = "Employment: "+ "<br>";
+        document.getElementById('wardcount5').innerHTML = "Housing: "+ "<br>";
+        document.getElementById('wardcount6').innerHTML = "Health: "+ "<br>";
+        document.getElementById('wardcount7').innerHTML = "Business: "+ "<br>";
+        document.getElementById('wardcount8').innerHTML = "Families: "+ "<br>";
+        document.getElementById('wardcount9').innerHTML = "Race: "+ "<br>";
+
+        }
+
+        });
+
+
+
+
+
+//   ---------- Listener 2D  ----------          
+
+ //Event listener for layer switch 
+        document.getElementById("Topic1").addEventListener("click", function () {
+
+        map.setLayoutProperty('Population2020', 'visibility', 'visible');
+        map.setLayoutProperty('Income2020', 'visibility', 'none');
+        map.setLayoutProperty('Education2020', 'visibility', 'none');
+        map.setLayoutProperty('Employment2020', 'visibility', 'none');
+        map.setLayoutProperty('Housing2020', 'visibility', 'none');
+        map.setLayoutProperty('Health2020', 'visibility', 'none');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'none');
+        map.setLayoutProperty('Race2020', 'visibility', 'none');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'block';
+        document.getElementById('legend_01').style.display = 'none';
+        document.getElementById('legend_02').style.display = 'none';
+        document.getElementById('legend_03').style.display = 'none';
+        document.getElementById('legend_04').style.display = 'none';
+        document.getElementById('legend_05').style.display = 'none';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'none';
+        document.getElementById('legend_08').style.display = 'none';
+
+        });
+
+ //Event listener for layer switch
+        document.getElementById("Topic2").addEventListener("click", function () {
+
+        map.setLayoutProperty('Population2020', 'visibility', 'none');
+        map.setLayoutProperty('Income2020', 'visibility', 'visible');
+        map.setLayoutProperty('Education2020', 'visibility', 'none');
+        map.setLayoutProperty('Employment2020', 'visibility', 'none');
+        map.setLayoutProperty('Housing2020', 'visibility', 'none');
+        map.setLayoutProperty('Health2020', 'visibility', 'none');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'none');
+        map.setLayoutProperty('Race2020', 'visibility', 'none');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'none';
+        document.getElementById('legend_01').style.display = 'block';
+        document.getElementById('legend_02').style.display = 'none';
+        document.getElementById('legend_03').style.display = 'none';
+        document.getElementById('legend_04').style.display = 'none';
+        document.getElementById('legend_05').style.display = 'none';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'none';
+        document.getElementById('legend_08').style.display = 'none';
+
+        });
+
+ //Event listener for layer switch
+        document.getElementById("Topic3").addEventListener("click", function () {
+
+        map.setLayoutProperty('Population2020', 'visibility', 'none');
+        map.setLayoutProperty('Income2020', 'visibility', 'none');
+        map.setLayoutProperty('Education2020', 'visibility', 'visible');
+        map.setLayoutProperty('Employment2020', 'visibility', 'none');
+        map.setLayoutProperty('Housing2020', 'visibility', 'none');
+        map.setLayoutProperty('Health2020', 'visibility', 'none');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'none');
+        map.setLayoutProperty('Race2020', 'visibility', 'none');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'none';
+        document.getElementById('legend_01').style.display = 'none';
+        document.getElementById('legend_02').style.display = 'block';
+        document.getElementById('legend_03').style.display = 'none';
+        document.getElementById('legend_04').style.display = 'none';
+        document.getElementById('legend_05').style.display = 'none';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'none';
+        document.getElementById('legend_08').style.display = 'none';
+        });
+
+ //Event listener for layer switch
+        document.getElementById("Topic4").addEventListener("click", function () {
+
+        map.setLayoutProperty('Population2020', 'visibility', 'none');
+        map.setLayoutProperty('Income2020', 'visibility', 'none');
+        map.setLayoutProperty('Education2020', 'visibility', 'none');
+        map.setLayoutProperty('Employment2020', 'visibility', 'visible');
+        map.setLayoutProperty('Housing2020', 'visibility', 'none');
+        map.setLayoutProperty('Health2020', 'visibility', 'none');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'none');
+        map.setLayoutProperty('Race2020', 'visibility', 'none');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'none';
+        document.getElementById('legend_01').style.display = 'none';
+        document.getElementById('legend_02').style.display = 'none';
+        document.getElementById('legend_03').style.display = 'block';
+        document.getElementById('legend_04').style.display = 'none';
+        document.getElementById('legend_05').style.display = 'none';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'none';
+        document.getElementById('legend_08').style.display = 'none';
+        });
+
+ //Event listener for layer switch
+        document.getElementById("Topic5").addEventListener("click", function () {
+
+        map.setLayoutProperty('Income2020', 'visibility', 'none');
+        map.setLayoutProperty('Population2020', 'visibility', 'none');
+        map.setLayoutProperty('Education2020', 'visibility', 'none');
+        map.setLayoutProperty('Employment2020', 'visibility', 'none');
+        map.setLayoutProperty('Housing2020', 'visibility', 'visible');
+        map.setLayoutProperty('Health2020', 'visibility', 'none');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'none');
+        map.setLayoutProperty('Race2020', 'visibility', 'none');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'none';
+        document.getElementById('legend_01').style.display = 'none';
+        document.getElementById('legend_02').style.display = 'none';
+        document.getElementById('legend_03').style.display = 'none';
+        document.getElementById('legend_04').style.display = 'block';
+        document.getElementById('legend_05').style.display = 'none';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'none';
+        document.getElementById('legend_08').style.display = 'none';
+    });
+
+ //Event listener for layer switch
+        document.getElementById("Topic6").addEventListener("click", function () {
+
+        map.setLayoutProperty('Income2020', 'visibility', 'none');
+        map.setLayoutProperty('Population2020', 'visibility', 'none');
+        map.setLayoutProperty('Education2020', 'visibility', 'none');
+        map.setLayoutProperty('Employment2020', 'visibility', 'none');
+        map.setLayoutProperty('Housing2020', 'visibility', 'none');
+        map.setLayoutProperty('Health2020', 'visibility', 'visible');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'none');
+        map.setLayoutProperty('Race2020', 'visibility', 'none');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'none';
+        document.getElementById('legend_01').style.display = 'none';
+        document.getElementById('legend_02').style.display = 'none';
+        document.getElementById('legend_03').style.display = 'none';
+        document.getElementById('legend_04').style.display = 'none';
+        document.getElementById('legend_05').style.display = 'block';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'none';
+        document.getElementById('legend_08').style.display = 'none';
+        });
+
+ //Event listener for layer switch
+       document.getElementById("Topic7").addEventListener("click", function () {
+
+       map.setLayoutProperty('Income2020', 'visibility', 'none');
+       map.setLayoutProperty('Population2020', 'visibility', 'none');
+       map.setLayoutProperty('Education2020', 'visibility', 'none');
+       map.setLayoutProperty('Employment2020', 'visibility', 'none');
+       map.setLayoutProperty('Housing2020', 'visibility', 'none');
+       map.setLayoutProperty('Health2020', 'visibility', 'none');
+       map.setLayoutProperty('Business2020', 'visibility', 'visible');
+       map.setLayoutProperty('Family2020', 'visibility', 'none');
+       map.setLayoutProperty('Race2020', 'visibility', 'none');
+       map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+       map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+       document.getElementById('title').style.display = 'block';
+       document.getElementById('mapoverlay_01').style.display = 'block';
+       document.getElementById('mapoverlay_02').style.display = 'block';
+       document.getElementById('mousemovetitle').style.display = 'block';
+       document.getElementById('chartContainer_02').style.display = 'block';
+       document.getElementById('legend_00').style.display = 'none';
+       document.getElementById('legend_01').style.display = 'none';
+       document.getElementById('legend_02').style.display = 'none';
+       document.getElementById('legend_03').style.display = 'none';
+       document.getElementById('legend_04').style.display = 'none';
+       document.getElementById('legend_05').style.display = 'none';
+       document.getElementById('legend_06').style.display = 'block';
+       document.getElementById('legend_07').style.display = 'none';
+       document.getElementById('legend_08').style.display = 'none';
+       });
+
+ //Event listener for layer switch
+        document.getElementById("Topic8").addEventListener("click", function () {
+
+        map.setLayoutProperty('Income2020', 'visibility', 'none');
+        map.setLayoutProperty('Population2020', 'visibility', 'none');
+        map.setLayoutProperty('Education2020', 'visibility', 'none');
+        map.setLayoutProperty('Employment2020', 'visibility', 'none');
+        map.setLayoutProperty('Housing2020', 'visibility', 'none');
+        map.setLayoutProperty('Health2020', 'visibility', 'none');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'visible');
+        map.setLayoutProperty('Race2020', 'visibility', 'none');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'none';
+        document.getElementById('legend_01').style.display = 'none';
+        document.getElementById('legend_02').style.display = 'none';
+        document.getElementById('legend_03').style.display = 'none';
+        document.getElementById('legend_04').style.display = 'none';
+        document.getElementById('legend_05').style.display = 'none';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'block';
+        document.getElementById('legend_08').style.display = 'none';
+        });
+
+ //Event listener for layer switch
+        document.getElementById("Topic9").addEventListener("click", function () {
+
+        map.setLayoutProperty('Income2020', 'visibility', 'none');
+        map.setLayoutProperty('Population2020', 'visibility', 'none');
+        map.setLayoutProperty('Education2020', 'visibility', 'none');
+        map.setLayoutProperty('Employment2020', 'visibility', 'none');
+        map.setLayoutProperty('Housing2020', 'visibility', 'none');
+        map.setLayoutProperty('Health2020', 'visibility', 'none');
+        map.setLayoutProperty('Business2020', 'visibility', 'none');
+        map.setLayoutProperty('Family2020', 'visibility', 'none');
+        map.setLayoutProperty('Race2020', 'visibility', 'visible');
+        map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+        map.setLayoutProperty('MouseMove', 'visibility', 'visible');
+        document.getElementById('title').style.display = 'block';
+        document.getElementById('mapoverlay_01').style.display = 'block';
+        document.getElementById('mapoverlay_02').style.display = 'block';
+        document.getElementById('mousemovetitle').style.display = 'block';
+        document.getElementById('chartContainer_02').style.display = 'block';
+        document.getElementById('legend_00').style.display = 'none';
+        document.getElementById('legend_01').style.display = 'none';
+        document.getElementById('legend_02').style.display = 'none';
+        document.getElementById('legend_03').style.display = 'none';
+        document.getElementById('legend_04').style.display = 'none';
+        document.getElementById('legend_05').style.display = 'none';
+        document.getElementById('legend_06').style.display = 'none';
+        document.getElementById('legend_07').style.display = 'none';
+        document.getElementById('legend_08').style.display = 'block';
+        });
+
+
+
+
+
+//   =========  Legend  ==========   
+
+ 
+ // colors and values for 'Population' layer
+ var Population2020Grades = ["~200000"+ "<br>", "200000~700000"+ "<br>","700000~2000000"+ "<br>", "2000000~6000000"+ "<br>", "6000000~10000000"+ "<br>", "10000000~40000000"+ "<br>"];
+ var Population2020Colors = ['#E8F9FD', '#B3E8E5', '#82DBD8', '#3BACB6', '#2F8F9D', '#006778'];
+
+                    var legend = document.getElementById('legend_00');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Population2020Colors, Population2020Grades, 'Population:');
+
+
+  
+
+ // colors and values for 'Income' layer
+ var Income2020Grades = ["~20000"+ "<br>", "20000~55000"+ "<br>", "55000~65000"+ "<br>", "65000~72000"+ "<br>", "72000~80000"+ "<br>", "80000~85000"+ "<br>"];
+ var Income2020Colors = ['#E9F8F9', '#97DEFF', '#62CDFF', '#19A7CE', '#19A7CE', '#146C94'];
+
+                    var legend = document.getElementById('legend_01');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Income2020Colors, Income2020Grades, 'Income:');
+
+
+  
+
+
+ // colors and values for 'Education' layer
+ var Education2020Grades = ["~0.211"+ "<br>", "0.211~0.281"+ "<br>", "0.281~0.331"+ "<br>", "0.331~0.381"+ "<br>", "0.381~0.421"+ "<br>", "0.421~0.611"+ "<br>"];
+ var Education2020Colors = ['#ECF2FF', '#C0EEF2', '#62CDFF', '#537FE7', '#2F58CD', '#3E54AC'];
+ 
+                    var legend = document.getElementById('legend_02');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Education2020Colors, Education2020Grades, 'Education:');
+
+
+  
+ 
+ // colors and values for 'Employment' layer
+ var Employment2020Grades = ["~0.311"+ "<br>", "0.311~0.481"+ "<br>", "0.481~0.551"+ "<br>", "0.551~0.581"+ "<br>", "0.581~0.611"+ "<br>", "0.611~0.641"+ "<br>"];
+ var Employment2020Colors = ['#EEF1FF', '#D2DAFF', '#AAC4FF', '#47B5FF', '#4649FF', '#3E54AC'];
+
+                    var legend = document.getElementById('legend_03');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Employment2020Colors, Employment2020Grades, 'Employment:');
+
+
+  
+
+
+ // colors and values for 'Housing' layer
+ var Housing2020Grades = ["~270000"+ "<br>", "270000~1000000"+ "<br>", "1000000~2000000"+ "<br>", "2000000~3000000"+ "<br>", "3000000~4000000"+ "<br>", "4000000~10000000"+ "<br>"];
+ var Housing2020Colors = ['#EEF1FF', '#D2DAFF', '#AAC4FF', '#537FE7', '#4649FF', '#1D1CE5'];
+
+                    var legend = document.getElementById('legend_04');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Housing2020Colors, Housing2020Grades, 'Housing:');
+
+
+  
+
+
+ // colors and values for 'Health' layer
+ var Health2020Grades = ["~0.021"+ "<br>", "-0.021~-0.051"+ "<br>", "0.051~0.061"+ "<br>", "0.061~0.071"+ "<br>", "0.071~0.085"+ "<br>", "0.085~0.10"+ "<br>"];
+ var Health2020Colors = ['#E9F8F9', '#E5E0FF', '#8EA7E9', '#7286D3', '#645CBB', '#13005A'];
+
+                    var legend = document.getElementById('legend_05');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Health2020Colors, Health2020Grades, 'Health:');
+
+
+
+
+
+ // colors and values for 'Business' layer
+ var Business2020Grades = ["~2350"+ "<br>", "-2350~-20000"+ "<br>", "20000~100000"+ "<br>", "100000~200000"+ "<br>", "200000~300000"+ "<br>", "300000~8000000"+ "<br>"];
+ var Business2020Colors = ['#E9F8F9', '#E5E0FF', '#8EA7E9', '#7286D3', '#645CBB', '#13005A'];
+
+                    var legend = document.getElementById('legend_06');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Business2020Colors, Business2020Grades, 'Business:');
+
+
+
+ // colors and values for 'Family' layer
+ var Family2020Grades = ["~200000"+ "<br>", "200000~700000"+ "<br>", "700000~2000000"+ "<br>", "2000000~-6000000"+ "<br>", "6000000~9000000"+ "<br>", "9000000~130000000"+ "<br>"];
+ var Family2020Colors = ['#F1F6F5', '#E5E0FF', '#BFACE2', '#8D9EFF', '#8D72E1', '#C47AFF'];
+
+                    var legend = document.getElementById('legend_07');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Family2020Colors, Family2020Grades, 'Family:');
+
+
+
+
+ // colors and values for 'Race' layer
+ var Race2020Grades = ["~15500"+ "<br>", "15500~100000"+ "<br>", "100000~300000"+ "<br>", "300000~400000"+ "<br>", "400000~1000000"+ "<br>", "1000000~62000000"+ "<br>"];
+ var Race2020Colors = ['#E5E0FF', '#F7E2E2', '#BFACE2', '#BFACE2', '#A66CFF', '#9145B6'];
+
+
+                    var legend = document.getElementById('legend_08');
+
+                    // function to add one row in the legend
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '12px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            value.style.fontSize = '10px'; // Change the font size here
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        labelElement.style.fontSize = '12px'; // Change the font size here
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(Race2020Colors, Race2020Grades, 'Race:');
+
+
+
+
+
+});  
+
+</script>
+
+
+
+
+
+
+<script >
+
+// ---------   Chart  ----------
+
+//The following statement loads the data from the CSV file, and then runs the function after the CSV is loaded. CityData is returned as an array containing the CSV data
+
+d3.csv("https://raw.githubusercontent.com/yanqizeng/Digital-Visualisation/main/US_state_samevalue.csv", function(USstateData) {
+            console.log(USstateData);
+            console.log(USstateData[1]);
+          
+            var svg = dimple.newSvg("#chartContainer_02", 1040, 230); // The chart is an svg variable assigned to the chartcontainer div. It's width and height are also assigned here
+            // Setting the length and width of the chart
+
+            var myChart = new dimple.chart(svg, USstateData);  // Create the chart with USstateData as the data input
+            myChart.setBounds(60, 15, 950, 130);            // Set the chart bounds within the svg container, top-left and bottom-right coords measured from top left
+            // Setting the location of the chart
+            // Coords measured from top left
+
+
+            var x = myChart.addCategoryAxis("x", "Name");  // Define the x axis. In this example it is a category axis
+            // Choose which column from the CSV
+
+            var y = myChart.addMeasureAxis("y", "PopulationsAndPeople"); // Define the y axis
+            y.title = "Population 2020 (millions)";
+
+            var s = myChart.addSeries("Name", dimple.plot.bar); // Plot a bar chart of the data
+            // You can choose different type of chart from "dimple.js example"
+            // Just copy the contents of "myChart.addSeries"
+            s.getTooltipText = function (e) {
+            return [
+             "City: " + e.aggField[0],
+             "Population 2020: " + e.yValue.toFixed(2) + " million"
+            ];
+            };
+
+            s.addOrderRule("PopulationsAndPeople", false); // Sort bars by descending population
+
+            s.afterDraw = function (shape, data) {
+            shape.append("title").text(data.Name);
+            };
+
+            s.barGap = 0.4; // Adjust the gap between bars
+
+            s.color = function (d) {
+            // Specify the colors for each bar individually
+            var colorScale = d3.scaleOrdinal()
+            .domain(USstateData.map(function (d) { return d.Name; }))
+            .range(["#54aae3", "#ff9900", "#00cc66", "#ff6699", "#336699"]);
+
+            return colorScale(d.x);
+            };
+
+            myChart.draw(500); // Draw the chart. The number is the animation delay in miliseconds
+
+            svg.selectAll("path.domain").style("stroke", "#CCC"); // These statements change the chart gridlines to a lighter grey colour
+            svg.selectAll("g.tick line").style("stroke", "#CCC");
+
+      });
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
+
+

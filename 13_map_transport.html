@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+#theme-title {
+    position: absolute;
+    margin-top: -5px;
+    left: 10px;
+    top: 10px;
+    z-index: 2000;
+    /* other styles you want */
+}
+#year {
+    display: block;
+    margin-left: 100px;  /* adjust as needed */
+}
+#map { height: 700px; 
+       
+}
+
+#control-panel {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 200px;  /* adjust as needed */
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 2000;
+   
+}
+
+#data-table {
+    position: absolute;
+    left: 10px;
+    top: 40px;
+    width: 500x;
+    height: 200x;
+    background-color: rgba(255, 255, 255, 0.7); /* white with 80% opacity */
+    padding: 10px;
+    z-index: 1000; /* put it above the map */
+}
+
+.arrow-up {
+    color: red;
+}
+.arrow-down {
+    color: green;
+}
+.bar {
+    height: 20px;
+    background: lightblue;
+}
+
+#piechart {
+    position: absolute;
+    left: 10px;  /* same left as #data-table */
+    top: 200px;  /* top of #data-table + its height including padding */
+    width: 500px;  /* same width as #data-table */
+    height: 400px;  /* same height as #data-table */
+    background-color: rgba(255, 255, 255, 0.7); /* white background with 70% opacity */
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 2000;  /* higher z-index than #data-table */
+}
+
+
+    </style>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+</head>
+<body>
+
+    <fieldset id="control-panel">
+        <legend id="theme-title">Years</legend>
+        <select id="year">
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+        </select>
+    </fieldset>
+    
+</select>
+<div id="theme-title">Co2 Emission Of Transaportation In Pittsburgh</div>
+<div id="map"></div>
+<div id="data-table"></div>
+<div id="piechart" ></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+
+
+var map = L.map('map', { zoomControl: false }).setView([40.441694, -80.080086], 11.5);
+
+
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    maxZoom: 19,
+    id: 'wangziyi1101/clhl1np3201mn01pn1co157pz',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1Ijoid2FuZ3ppeWkxMTAxIiwiYSI6ImNrOW0zYjgyMTAwcDIzZW50cnhwMW13YjEifQ.Jz3JONt2F9w1EFYf4afcUg'
+}).addTo(map);
+
+// Load Pittsburgh boundary
+fetch('https://raw.githubusercontent.com/ZoeyW99/dizgroup/main/Pittsburgh_City_Boundary.geojson')
+    .then(response => response.json())
+    .then(data => {
+        L.geoJSON(data, {
+            style: function() {
+                return {color: 'darkblue'};
+            }
+        }).addTo(map);
+    var arrowIcon = L.divIcon({
+    className: 'arrow-icon',
+    iconSize: [10, 10],
+    html: '<svg width="10" height="10"><polygon points="0,0 10,5 0,10" style="fill:lime;stroke:purple;stroke-width:1" /></svg>'
+});
+    });
+
+var nestedData; // Define nestedData in global scope
+
+// Load and process data
+d3.csv("https://raw.githubusercontent.com/ZoeyW99/dizgroup/main/trans_cleandata.csv").then(function(data) {
+    nestedData = d3.nest()
+        .key(function(d) { return d.year; })
+        .key(function(d) { return d.travel_bounds; })
+        .rollup(function(v) { return d3.sum(v, function(d) { return +d.gpc_co2e_tons; }); })
+        .entries(data);
+
+    updateMap(nestedData, '2018');
+    
+
+    document.getElementById('year').addEventListener('change', function(e) {
+        var year = e.target.value;
+        updateMap(nestedData, year);
+      
+    });
+});
+
+function updateMap(nestedData, year) {
+var yearData = nestedData.find(function(d) { return d.key === year; });
+
+// 3 markers for each year
+var markerData = {
+    'IN-BOUNDARY': [40.440624, -79.995888],
+    'INBOUND': [40.456017, -80.019922],
+    'OUTBOUND': [40.429917, -79.960800]
+};
+
+
+// Clear existing markers
+map.eachLayer(function(layer) {
+    if (layer instanceof L.Marker) {
+        map.removeLayer(layer);
+    }
+});
+
+// Add new markers
+for (var bounds in markerData) {
+    var sumTrips = yearData.values.find(function(d) { return d.key === bounds; }).value;
+    var marker = L.marker(markerData[bounds]);
+    marker.bindPopup("<b>" + bounds + "</b><br>Total Co2emission(tons) per year " + sumTrips);
+    marker.addTo(map)
+    marker.openPopup(); ;
+}
+}
+
+d3.csv("https://raw.githubusercontent.com/ZoeyW99/dizgroup/main/total2.csv").then(function(data) {
+    var nestedData = d3.nest()
+        .key(function(d) { return d.year; })
+        .key(function(d) { return d.travel_bounds; })
+        .rollup(function(v) { return d3.sum(v, function(d) { return +d.gpc_co2e_tons; }); }) 
+        .entries(data)
+        .sort(function(a, b) { return d3.ascending(a.key, b.key); }) // Sort by year
+
+    updateTable(nestedData);
+        
+    document.getElementById('year').addEventListener('change', function(e) {
+        var year = e.target.value;
+        updateTable(nestedData);
+    });
+});
+
+
+function updateTable(nestedData) {
+    var dataTable = d3.select('#data-table');
+    dataTable.html(''); // clear existing content
+
+    var table = dataTable.append('table');
+
+    // header row
+    var thead = table.append('thead');
+    thead.append('th').text('Year');
+    thead.append('th').text('CO2 Emission (tons)');
+    thead.append('th').text('Change (%)');
+
+    // data rows
+    var tbody = table.append('tbody');
+    
+    var maxEmission = d3.max(nestedData, function(d) { return d3.sum(d.values, function(v) { return v.value; }); });
+    var xScale = d3.scaleLinear().domain([0, maxEmission]).range([0, 300]); // assuming the max width is 300px
+
+    nestedData.forEach(function(yearData, i) {
+        var row = tbody.append('tr');
+        var totalEmission = d3.sum(yearData.values, function(d) { return d.value; });
+        row.append('td').text(yearData.key); // year
+        row.append('td').text(totalEmission);
+
+        // calculate change from previous year
+        if (i > 0) {
+            var lastYearTotal = d3.sum(nestedData[i - 1].values, function(d) { return d.value; });
+            var change = totalEmission - lastYearTotal;
+            var percentChange = (change / lastYearTotal) * 100;
+            var arrow = percentChange >= 0 ? '↑' : '↓';
+            var arrowClass = percentChange >= 0 ? 'arrow-up' : 'arrow-down';
+            row.append('td').html('<span class="' + arrowClass + '">' + arrow+ '</span> ' + percentChange.toFixed(2) + '%');
+        } else {
+            row.append('td').text('');
+        }
+
+        // create a horizontal bar chart
+        row.append('td')
+           .append('div')
+           .classed('bar', true)
+           .style('width', xScale(totalEmission) + 'px');
+    });
+}
+
+ // 加载Google的图表库
+google.charts.load("current", {packages:["corechart"]});
+
+// 先定义一个空的chart变量，后续可以重复使用
+var chart;
+
+function drawChart(nestedData, year) {
+    var yearData = nestedData.find(function(d) { return d.key === year; });
+    var dataArray = [['travel_bounds', 'gpc_co2e_tons']];
+
+    yearData.values.forEach(function(boundsData) {
+        // Skip 'TOTAL' bounds
+        if (boundsData.key !== 'TOTAL') {
+            dataArray.push([boundsData.key, boundsData.value]);
+        }
+    });
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    var options = {
+    title: 'CO2 Emissions in ' + year,
+    pieHole: 0.4,
+    backgroundColor: 'transparent',left: 100,  /* same left as #data-table */
+    width: 600,  /* same width as #data-table */
+    height: 500, 
+    colors: ['#088395', '#05BFDB', '#0A4D68']  // Set chart colors
+    //...
+};
+
+    // 检查chart是否已经初始化，如果没有则初始化，如果已经初始化则只更新数据和选项
+    if (!chart) {
+        chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    }
+    chart.draw(data, options);
+}
+
+d3.csv("https://raw.githubusercontent.com/ZoeyW99/dizgroup/main/trans_cleandata.csv").then(function(data) {
+    // 你现有的数据处理和地图更新代码
+
+    // 初始化饼图
+    google.charts.setOnLoadCallback(function() {
+        drawChart(nestedData, '2018');
+    });
+
+    document.getElementById('year').addEventListener('change', function(e) {
+        var year = e.target.value;
+        // 你现有的地图和表格更新代码
+
+        // 更新饼图
+        drawChart(nestedData, year);
+    });
+});
+
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>U.S. Environment 1985-2022</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css"/>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>    
+    <link rel='stylesheet'
+        href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #my-div {
+            display: block;
+        }
+
+        #my-div2 {
+            display: none;
+        }
+
+        .mapboxgl-ctrl-geocoder {
+            position: absolute;
+            top: 5px;
+            right: 500px;
+        }
+
+        .blink {
+            color: rgb(80, 162, 156);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .publink {
+            color: rgb(193, 123, 62);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .map-overlay {
+            font: 10px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 30%;
+            top: 0;
+            right: 0;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay-left {
+            font: 10px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 25%;
+            top: 0;
+            left: 3%;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay-left .map-overlay-slider {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay-left2 {
+            font: 10px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 25%;
+            top: 20%;
+            left: 3%;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay-left2 .map-overlay-slider2 {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+
+        .map-overlay table {
+            border: none;
+            width: 100%;
+
+        }
+
+        .map-overlay h2 {
+            line-height: 24px;
+            display: block;
+            margin: 0 0 10px;
+        }
+
+        .map-overlay label {
+            font: 14px/18px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            vertical-align: bottom;
+            margin: 0;
+            padding: 0;
+        }
+
+        .map-overlay input {
+            display: inline;
+            vertical-align: middle;
+            margin: 5px;
+            padding: 0;
+        }
+
+        .map-overlay p.credit {
+            margin: 0px 0 0 0;
+            padding: 0;
+        }
+
+        .map-overlay2 {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 30%;
+            top: 60%;
+            right: 0;
+            padding: 10px;
+            opacity: 85%
+        }
+
+        .map-overlay2 .map-overlay-inner2 {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay2 table {
+            border: none;
+            width: 100%;
+        }
+
+        .map-overlay2 h2 {
+            line-height: 24px;
+            display: block;
+            margin: 0 0 10px;
+        }
+
+        .map-overlay2 h3 {
+            line-height: 24px;
+            display: block;
+            margin: 0 0 10px;
+            font-size: 13px;
+            font-weight: normal;
+
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+    <div id='map'></div>
+    <div id='geocoder'></div>
+
+    <div class='map-overlay-left'>
+        <div class='map-overlay-slider'>
+            <h2>Year</h2>
+            <table><tr><td>
+            <input id='slider' type='range' min='0' max='6' step='1' value='0' list='tickmarks' />
+            <datalist id="tickmarks">
+              <option value="0" label="1985">
+              <option value="1" label="1995">
+              <option value="2" label="2005">
+              <option value="3" label="2010">
+              <option value="4" label="2015">
+              <option value="5" label="2020">
+              <option value="6" label="2022">
+              </datalist>
+             </td>
+             <td>
+              <label id='year'>1985</label>
+             </td>
+             </tr></table>
+             <p class="credit">Data Source: <a href="https://pghgishub-pittsburghpa.opendata.arcgis.com/datasets/pittsburghpa::neighborhoods-with-snap-data/explore"> City of Pittsburgh</a>. </p>
+        </div>
+    </div>
+
+    <div class='map-overlay'>
+
+        <div class='map-overlay-inner'>
+            <h1> U.S. AirQuality 1985-2022</h1>
+            <table>
+                <tr>
+                    <td>
+                        <input type="radio" name="layers" id="layer1" value="Employment" checked><label>GoodDays
+                            &nbsp;
+                            &nbsp;</label>
+                        <input type="radio" name="layers" id="layer2" value="Residents"><label>AirQuality</label>
+                    </td>
+                </tr>
+
+
+
+            </table>
+        </div>
+    </div>
+
+     <div id='my-div' class='map-overlay2'>
+        <div class='map-overlay-inner2'>
+            <h2 id="laname">Hover over a Neighborhood</h2>
+            <h3 id="wardcount1">GoodDays1985：</h3>
+            <h3 id="wardcount2">GoodDays1995：</h3>
+            <h3 id="wardcount3">GoodDays2005：</h3>
+            <h3 id="wardcount4">GoodDays2010：</h3>
+            <h3 id="wardcount5">GoodDays2015：</h3>
+            <h3 id="wardcount6">GoodDays2020：</h3>
+            <h3 id="wardcount7">GoodDays2022：</h3>
+        </div>
+    </div>
+
+    <div id='legend' style='position: absolute; bottom: 30px; left: 10px; padding: 10px; background: white;'></div>
+
+        <script>
+
+    // Create an array of the available data years
+    var years = [
+        '1985',
+        '1995',
+        '2005',
+        '2010',
+        '2015',
+        '2020',
+        '2022'
+    ];
+
+
+            mapboxgl.accessToken = 'pk.eyJ1IjoidWNmbnNobyIsImEiOiJjbGQxbGV2eXAyN25lM3Budm1ncWF0bHRkIn0.NS58Kzy_i2MZqFQGtESBpQ';
+
+            // Load a new map in the 'map' HTML div
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/ucfnsho/clhi58tpm01gw01qy9bo8gged',
+                center: [-79.97, 40.44],
+                zoom: 5,
+                pitch: 15
+
+            });
+            var geocoder = new MapboxGeocoder({
+                accessToken: 'pk.eyJ1IjoidWNmbnNobyIsImEiOiJjbGQxbGV2eXAyN25lM3Budm1ncWF0bHRkIn0.NS58Kzy_i2MZqFQGtESBpQ',
+                mapboxgl: mapboxgl,
+                placeholder: ' Search County...', // 设置占位符文本
+                countries: 'us', // 限制搜索到美国
+                language: 'en' 
+            });
+
+            geocoder.on('result', function(e) {
+                // 使用定制的缩放级别，而不是默认的缩放行为
+                map.flyTo({
+                    center: e.result.center,
+                    zoom: 8 // 设置你希望的缩放级别
+                });
+            });
+
+            // 添加geocoder到地图
+            map.addControl(geocoder);
+
+            map.on('load', function () {
+                // Set global light properties which influence 3D layer shadows
+                map.setLight({ color: "#fff", intensity: 0.35, position: [1.15, 210, 30] });
+
+                // Add standard navigation control
+                var nav = new mapboxgl.NavigationControl();
+                map.addControl(nav, 'top-left');
+
+                            // This is the main function that runs when the user changes the data year
+
+            function setYear_pop(year) {
+                document.getElementById('year').textContent = years[year];  // 设置标签为正确的年份
+
+                var colorProp = "GoodDays" + years[year];
+
+                var colorStops = [
+                        [300, '#e74645'],
+                        [250, '#fb7756'],
+                        [200, '#facd60'],
+                        [150, '#9acd32'],
+                        [100, '#58b368'],
+                        [50, '#12492f']
+                    ];
+                
+
+                map.setPaintProperty('gdp2D', 'fill-color', {
+                    property: colorProp,
+                    type: 'exponential',
+                    stops: colorStops
+                });
+                var colorStops = [
+                        [300, '#e74645'],
+                        [250, '#fb7756'],
+                        [200, '#facd60'],
+                        [150, '#9acd32'],
+                        [100, '#58b368'],
+                        [50, '#12492f']
+                    ];
+                
+                map.setPaintProperty('gdp', 'fill-color', {
+                    property: colorProp,
+                    type: 'exponential',
+                    stops: colorStops
+                });
+            }
+
+                map.addLayer({
+                    id: 'gdp2D',
+                    type: 'fill',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://ucfnsho.acgxz0yz'
+                    },
+                    'source-layer': 'selected-4qi94d',
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    paint: {
+                        'fill-color': {
+                            property: 'GoodDays1985',
+                            type: 'exponential',
+                            stops: [
+                                [50, '#e74645'],
+                            [100, '#fb7756'],
+                            [150, '#facd60'],
+                            [200, '#9acd32'],
+                            [250, '#58b368'],
+                            [300, '#12492f']]  
+                    }}
+                })   
+
+
+
+                // Load the 3D pub count layer as a fill-extrusion type
+                map.addLayer({
+                    id: 'gdp',
+                    type: 'fill',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://ucfnsho.acgxz0yz'
+                    },
+                    'source-layer': 'selected-4qi94d',
+                    'layout': {
+                        'visibility': 'none'
+                    },
+                    paint: {
+                        'fill-color': {
+                            property: 'MaxAqi1985',
+                            type: 'exponential',
+                            stops: [
+                            [0, '#e74645'],
+                            [50, '#fb7756'],
+                            [100, '#facd60'],
+                            [150, '#9acd32'],
+                            [200, '#58b368'],
+                            [300, '#12492f']
+                                ]
+                        
+                    }
+                    }
+
+                });
+
+
+                // Add the line highlight layer. This layer has a filter, which initially is empty.
+                map.addLayer({                  
+                    id: 'lahighlight',
+                    type: 'line',
+                    source: {
+                        type: 'vector',
+                        url: 'mapbox://ucfnsho.acgxz0yz' 
+                    },
+                    'source-layer': 'selected-4qi94d', 
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    paint: {
+                        'line-color': '#adf',
+                        'line-width': 4
+                    },
+                    filter: ['==', 'NAME', 'empty']
+                });
+
+                
+                map.on('mousemove', 'gdp2D', function (e) {       
+                    var la = map.queryRenderedFeatures(e.point, {   
+                        // This queries whether the mouse is over an object in the ward layer
+                        layers: ['gdp2D']
+                    });
+
+                    if (la.length == 1) {   
+                        map.setFilter('lahighlight', ['==', 'NAME', la[0].properties.NAME]);
+                        console.log(la[0].properties.NAME);
+
+                        document.getElementById('laname').innerHTML = la[0].properties.NAME;
+
+                        document.getElementById('wardcount1').innerHTML = "GoodDays1985: " + la[0].properties.GoodDays1985;
+                        document.getElementById('wardcount2').innerHTML = "GoodDays1995: " + la[0].properties.GoodDays1995;
+                        document.getElementById('wardcount3').innerHTML = "GoodDays2005: " + la[0].properties.GoodDays2005;
+                        document.getElementById('wardcount4').innerHTML = "GoodDays2010: " + la[0].properties.GoodDays2010;
+                        document.getElementById('wardcount5').innerHTML = "GoodDays2015: " + la[0].properties.GoodDays2015;
+                        document.getElementById('wardcount6').innerHTML = "GoodDays2020: " + la[0].properties.GoodDays2020;
+                        document.getElementById('wardcount7').innerHTML = "GoodDays2022: " + la[0].properties.GoodDays2022;
+                        console.log(la[0].id);
+                        console.log(la);
+
+                    } else {
+                        map.setFilter('lahighlight', ['==', 'NAME', 'null']);
+                        console.log('No features');
+                        document.getElementById('laname').innerHTML = "Hover over a Neighborhood";
+                        document.getElementById('wardcount1').innerHTML = "GoodDays1985: " ;
+                        document.getElementById('wardcount2').innerHTML = "GoodDays1995: " ;
+                        document.getElementById('wardcount3').innerHTML = "GoodDays2005: " ;
+                        document.getElementById('wardcount4').innerHTML = "GoodDays2010: " ;
+                        document.getElementById('wardcount5').innerHTML = "GoodDays2015: " ;
+                        document.getElementById('wardcount6').innerHTML = "GoodDays2020: " ;
+                        document.getElementById('wardcount7').innerHTML = "GoodDays2022: " ;
+                    }
+
+                 });
+
+                // This is the main event listner which is triggered when the mouse moves
+                map.on('mousemove', 'gdp', function (e) {       
+                    var la = map.queryRenderedFeatures(e.point, {   
+                        // This queries whether the mouse is over an object in the ward layer
+                        layers: ['gdp']
+                    });
+
+                    if (la.length == 1) {   
+
+                        map.setFilter('lahighlight', ['==', 'NAME', la[0].properties.NAME]);
+                        console.log(la[0].properties.NAME);
+
+                        document.getElementById('laname').innerHTML = la[0].properties.NAME;
+
+                        document.getElementById('wardcount1').innerHTML = "MaxAqi1985: " + la[0].properties.MaxAqi1985;
+                        document.getElementById('wardcount2').innerHTML = "MaxAqi1995: " + la[0].properties.MaxAqi1995;
+                        document.getElementById('wardcount3').innerHTML = "MaxAqi2005: " + la[0].properties.MaxAqi2005;
+                        document.getElementById('wardcount4').innerHTML = "MaxAqi2010: " + la[0].properties.MaxAqi2010;
+                        document.getElementById('wardcount5').innerHTML = "MaxAqi2015: " + la[0].properties.MaxAqi2015;
+                        document.getElementById('wardcount6').innerHTML = "MaxAqi2020: " + la[0].properties.MaxAqi2020;
+                        document.getElementById('wardcount7').innerHTML = "MaxAqi2022: " + la[0].properties.MaxAqi2022;
+                        console.log(la[0].id);
+                        console.log(la);
+
+                    } else {
+                        map.setFilter('lahighlight', ['==', 'NAME', 'null']);
+                        console.log('No features');
+                        document.getElementById('laname').innerHTML = "Hover over a Neighborhood";
+                        document.getElementById('wardcount1').innerHTML = "MaxAqi1985: ";
+                        document.getElementById('wardcount2').innerHTML = "MaxAqi1995: ";
+                        document.getElementById('wardcount3').innerHTML = "MaxAqi2005: ";
+                        document.getElementById('wardcount4').innerHTML = "MaxAqi2010: ";
+                        document.getElementById('wardcount5').innerHTML = "MaxAqi2015: "; 
+                        document.getElementById('wardcount6').innerHTML = "MaxAqi2020: "; 
+                        document.getElementById('wardcount7').innerHTML = "MaxAqi2022: ";
+                    }
+
+                 });
+
+
+
+                //Event listener for layer switch
+                document.getElementById("layer1").addEventListener("click", function () {
+
+                    map.setLayoutProperty('gdp2D', 'visibility', 'visible');
+                    map.setLayoutProperty('gdp', 'visibility', 'none');
+                    map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+                    //map.setLayoutProperty('top', 'visibility', 'none');
+                    document.getElementById('my-div').style.display = 'block';
+                    document.getElementById('my-div2').style.display = 'block';
+                    //map.setLayoutProperty('labels', 'visibility', 'visible');
+                    //map.setLayoutProperty('toplabels', 'visibility', 'none');
+
+                });
+
+                document.getElementById("layer2").addEventListener("click", function () {
+
+                    map.setLayoutProperty('gdp2D', 'visibility', 'none');
+                    map.setLayoutProperty('gdp', 'visibility', 'visible');
+                    map.setLayoutProperty('lahighlight', 'visibility', 'visible');
+                    //map.setPaintProperty('ward', 'fill-opacity', 0.25);
+                    //map.setLayoutProperty('top', 'visibility', 'visible');
+                    //map.setPaintProperty('top', 'circle-opacity', 0.95);
+                    document.getElementById('my-div').style.display = 'block';
+                    document.getElementById('my-div2').style.display = 'block';
+                    //map.setLayoutProperty('labels', 'visibility', 'none');
+                    //map.setLayoutProperty('toplabels', 'visibility', 'visible');
+
+
+                });
+
+
+                document.getElementById('slider').addEventListener('input', function(e) {
+                var year = parseInt(e.target.value);
+                
+                setYear_pop(year);
+
+                });
+
+
+                    // colors and values for 'gdp' layer
+                    var gdpGrades = ["300~250", "250~200", "200~150", "150~100", "100~50", "50~0"];
+                    var gdpColors = ['#e74645', '#fb7756', '#facd60', '#9acd32', '#58b368', '#12492f'];
+
+                    var legend = document.getElementById('legend');
+
+                    function addLegendRow(colors, grades, label) {
+                        var row = document.createElement('div');
+
+                        for (var i = 0; i < grades.length; i++) {
+                            var box = document.createElement('div');
+                            box.style.backgroundColor = colors[i];
+                            box.style.width = '20px';
+                            box.style.height = '10px';
+                            box.style.display = 'inline-block';
+                            row.appendChild(box);
+                            var value = document.createElement('span');
+                            value.innerHTML = grades[i];
+                            value.style.marginLeft = '5px';
+                            value.style.marginRight = '5px';
+                            row.appendChild(value);
+                        }
+
+                        var labelElement = document.createElement('strong');
+                        labelElement.innerHTML = label;
+                        legend.appendChild(labelElement);
+                        legend.appendChild(row);
+                    }
+
+                    addLegendRow(gdpColors, gdpGrades, 'GoodDays :');
+                    addLegendRow(gdpColors, gdpGrades, 'AirQuality :');
+
+                
+                
+
+
+});
+
+
+
+        </script>
+
+</body>
+
+</html>

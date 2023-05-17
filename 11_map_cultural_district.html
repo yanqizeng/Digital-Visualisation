@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Pittsburgh Cultural District</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+      <!--MapBox-->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+   
+    
+      <!-- DeckGL Library -->
+   <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+
+    <style>
+
+        body { margin: 0; padding: 0; }
+    
+        
+        #title {
+            position: absolute;
+            background-color: #fff;
+            box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 15px;
+            margin-top: 15px;
+            margin-left: 15px;
+        }
+    
+        #title h2 {
+            line-height: 24px;
+            margin: 0;
+        }
+    
+        #title p.credit {
+           margin: 10px 0 0 0;
+           padding: 0;
+        }
+        
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; };
+        
+    </style>
+
+</head>
+
+<body>
+     
+<!-- search box -->
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.min.js'></script>
+<!-- search box css -->
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.css' type='text/css' />
+<!-- language -->
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v0.9.2/mapbox-gl-language.js'></script>  /
+
+
+<div id='map'></div>
+
+        <div id="title">
+            <h2>Pittsburgh Cultural District</h2>
+            <p class="credit">Packed into a 14-square-block area — stretching from the Convention Center to Stanwix Street — are world-class theaters, engaging art galleries, inspiring public parks and art installations, and renowned restaurants. These spaces are home to a year-round schedule full of fresh and exciting events, installations, and programming.</p> 
+        </div> 
+
+</div>
+</div>
+
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoidWNmbnNobyIsImEiOiJjbGQxbGV2eXAyN25lM3Budm1ncWF0bHRkIn0.NS58Kzy_i2MZqFQGtESBpQ'; // Put your Mapbox Public Access token here
+
+    // Load a new map in the 'map' HTML div
+    var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/ucfnsho/clhl2bvwg01p101pgdzeo5308', // style location
+    center: [-79.99939440705269, 40.44397911960966], // starting position [lng, lat]
+    zoom: 16 // starting zoom
+    });
+    
+    map.addControl(new mapboxgl.NavigationControl());
+
+    //1. load the cherry spot places
+    map.on('load', function() {
+          // Add the proportional circle layer to the map
+            map.addLayer({
+                    id: 'pointcherry',
+                    type: 'circle',
+                    source: {
+                      type: 'vector',
+                      url: 'mapbox://ucfnsho.dpa8bgve' // Your Mapbox tileset Map ID
+                    },
+                    'source-layer': 'cd-599sdr', // name of tilesets
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    paint: {
+                        "circle-radius": 20,
+                        'circle-color': '#ffc14d',
+                        'circle-opacity': 0.9
+                        // 'circle-stroke-width': 0,
+                        // 'circle-stroke-color': '#ffc14d',
+                        // 'circle-stroke-opacity': 1, 
+                  }});
+  
+
+            var mypopup = new mapboxgl.Popup({closeButton: false,
+                            closeOnClick: false,
+                            offset: 20,
+                            anchor: 'left'});
+
+            // Another event listener that adds the popup when the user puts their cursor over the tube circles
+            map.on('mouseover', 'pointcherry', function (e) {
+                    mypopup
+                        .setLngLat(e.features[0].geometry.coordinates.slice())
+                        .setHTML("<h3>" + e.features[0].properties.Field1 + 
+                            "</h3>Information: " + e.features[0].properties.Field4)
+                        .addTo(map);
+                });
+
+            // Change the cursor to a pointer when the mouse is over the stations layer.
+            map.on('mouseenter', 'pointcherry', function () {
+                  map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves and remove the popup window.
+            map.on('mouseleave', 'pointcherry', function () {
+                map.getCanvas().style.cursor = '';
+                mypopup.remove();    
+            });
+        
+
+//     map.addControl(new MapboxGeocoder({
+//     accessToken: mapboxgl.accessToken,
+//     mapboxgl: mapboxgl
+// }));
+
+        });
+</script>
+
+</body>
+</html>

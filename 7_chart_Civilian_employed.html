@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>histogram_Civilian employed by Industry 2010-2021</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <style>    
+        #chartContainer {width: 840px; margin: auto; margin-top: 0px; }
+        #chartContainer p {margin-left: 0px; margin-bottom: 5px; margin-top: 0; padding: 0;}
+        #charttitle {font: bold 30px  Verdana, sans-serif;}
+        #myChart{
+        /* width: 840px;
+        margin: 50px auto; */
+        margin-left: 50px;
+        margin-bottom: 0px;
+        margin-top: 0;
+        padding: 0;
+    }
+    </style>
+</head>
+<body>
+    <div id="chartContainer">
+      
+        <p id="charttitle">Civilian employed by Industry 2010-2021</p>
+        <p id="chartsubhead">Data Source: United States Census Bureau.</p>
+    
+    </div>
+    <!-- <canvas id="myChart"></canvas> -->
+    <div style="width: 100%">
+        <canvas id="myChart"></canvas>
+    </div>
+    
+    <!-- <canvas id="myChart"></canvas> -->
+    <script>
+        var colors = [
+            'rgba(255, 99, 132, 0.2)',   // red
+            'rgba(255, 159, 64, 0.2)',   // orange
+            'rgba(255, 205, 86, 0.2)',   // yellow
+            'rgba(75, 192, 192, 0.2)',   // green
+            'rgba(54, 162, 235, 0.2)',   // blue
+            'rgba(153, 102, 255, 0.2)',  // purple
+            'rgba(201, 203, 207, 0.2)',  // grey
+            'rgba(255, 99, 132, 0.6)',   // red
+            'rgba(255, 159, 64, 0.6)',   // orange
+            'rgba(255, 205, 86, 0.6)',   // yellow
+            'rgba(75, 192, 192, 0.6)',   // green
+            'rgba(54, 162, 235, 0.6)',   // blue
+            'rgba(153, 102, 255, 0.6)',  // purple
+            'rgba(201, 203, 207, 0.6)',  // grey
+            // Add more colors if needed
+        ];
+
+        Papa.parse("https://raw.githubusercontent.com/sharonhong/diz_hsy/main/dp03_csv.csv", {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                var data = results.data;
+                var labels = ['per2010', 'per2015', 'per2020','per2021'];
+                var datasets = data.map(function(row, index) {
+                    return {
+                        label: row.Industry,
+                        data: labels.map(function(label) { return row[label]; }),
+                        backgroundColor: colors[index % colors.length]
+                    };
+                });
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                        font: {
+                                        size: 16,
+                                        }
+                                     },
+                                     title: {
+                display: true,
+                text: 'Employment by industry(%)',
+                font: {
+                    size: 18,
+                }
+            }
+                            },
+                            x: {
+                                stacked: true,
+                                ticks: {
+                                    font: {
+                                    size: 16
+                                    }
+                                },
+                                title: {
+                display: true,
+                text: 'Year',
+                font: {
+                    size: 18
+                }
+            }
+                        }
+                    }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
