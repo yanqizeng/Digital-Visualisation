@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Civilian employed by Industry 2010-2021.</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+<!--Load the chart libraries. Dimple is built on D3, and you need to also add D3-->
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/dimple/2.3.0/dimple.latest.min.js"></script>
+
+<style>    
+    #chartContainer {width: 800px; margin: auto; margin-top: 50px; }
+    #chartContainer p {margin-left: 60px; margin-bottom: 5px; margin-top: 0; padding: 0;}
+    #charttitle {font: bold 22px  Verdana, sans-serif;}
+</style>
+
+</head>
+
+    
+<body>
+
+<!--This is the div container for the chart-->
+
+<div id="chartContainer">
+      
+    <p id="charttitle" style="font-size: 26px;">Civilian employed by Top 5 Industries 2010-2021.</p>
+    <p id="chartsubhead">Data Source: United States Census Bureau.</p>
+
+</div>
+
+
+<script>
+
+
+//This statement loads the data from the CSV file, and then runs the function after the CSV is loaded. CityData is an array that contains the CSV data
+
+      d3.csv("https://raw.githubusercontent.com/sharonhong/diz_hsy/main/dp03_csv_new1.csv", function(CityData) {
+        
+
+        var CityDataIndex = 1;    // Here we select which row of the csv data is going to be loaded. Change the number to change which city is shown in the chart
+        console.log(CityData[0]); // Show the data of the row in the console
+
+        document.getElementById("charttitle").innerHTML = "Civilian employed by Top 5 Industries 2010-2021"; // The name of the city and country is inserted into the chart title
+
+          
+        var svg = dimple.newSvg("#chartContainer", 850, 570); // The chart is an svg variable assigned to the chartcontainer div. It's width and height are also assigned here
+
+        // Dimple requires each data point on a time series to be a separate row. Below we insert the population data from the CityData array into a new array of JSON objects in the required format
+        
+        var chartdata = [];
+          
+        for (let CityDataIndex=0; CityDataIndex < 5; CityDataIndex++) {
+            var name = CityData[CityDataIndex].Industry;
+            console.log(name);
+            chartdata.push(
+              { "City":CityData[CityDataIndex].Industry,"Year":"2010","Civilian employed (%)":(CityData[CityDataIndex].per2010) },
+              { "City":CityData[CityDataIndex].Industry,"Year":"2015","Civilian employed (%)":(CityData[CityDataIndex].per2015) },
+              { "City":CityData[CityDataIndex].Industry,"Year":"2020","Civilian employed (%)":(CityData[CityDataIndex].per2020) },
+              { "City":CityData[CityDataIndex].Industry,"Year":"2021","Civilian employed (%)":(CityData[CityDataIndex].per2021) }
+            )
+        }
+
+
+        var myChart = new dimple.chart(svg, chartdata);  // Create the chart
+        myChart.setBounds(120, 65, 650, 350);            // Set the chart bounds within the svg container
+
+/*        myChart.defaultColors = [
+            new dimple.color("#54aae3"),
+            new dimple.color("#54aae3")
+        ];*/
+
+
+        var x = myChart.addTimeAxis("x", "Year", "%Y", "%Y");  // Define the x axis. The latter statements define the date format which we want to be year only
+
+        x.timeInterval = 5;
+          
+        var y = myChart.addMeasureAxis("y", "Civilian employed (%)"); // Define the y axis
+        y.ticks = 6;
+
+        var s = myChart.addSeries("City", dimple.plot.line);
+        s.lineMarkers = false;
+        s.interpolation = "cardinal";
+        s.lineWeight = 5;
+          
+        var legend = myChart.addLegend(100, 450, 100, 300, "left");
+
+        legend.fontSize = "14px"; 
+
+        
+        myChart.axes[0].fontSize = "16px";
+
+        myChart.axes[1].fontSize = "16px";
+
+        myChart.draw(500); // Draw the chart. The number is the animation delay in miliseconds
+
+
+          
+      });
+
+
+</script>
+
+</body>
+</html>

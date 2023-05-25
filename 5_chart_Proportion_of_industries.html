@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Civilian employed by Industries 1970-1990</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        #chartContainer {width: 840px; margin: auto; margin-top: 20px; }
+        #chartContainer p {margin-left: 30px; margin-bottom: 5px; margin-top: 0; padding: 0;}
+        #charttitle {font: bold 25px  Verdana, sans-serif;}
+        /* h1 {
+            text-align: center;
+        } */
+    </style>
+</head>
+<body>
+    <!-- <h1>Proportion of industries in Pittsburgh from 1970 to 1990</h1> -->
+    <div id="chartContainer">
+      
+        <p id="charttitle">Civilian employed by Industries 1970-1990</p>
+        <p id="chartsubhead">Data Sources: U.S. Census: 1970 Pop4A, 1980 STF3A, 1990 STF3A.</p>
+    
+    </div>
+    <div style="width: 80%; margin: 0 auto; margin-top: 0px">
+    <canvas id="myChart"></canvas>
+    </div>
+    <script>
+        var colors = [
+            '#f6f4d2',
+            '#d9ed92',   // red
+            '#b5e48c',   // orange
+            '#99d98c',   // yellow
+            '#76c893',   // green
+            '#52b69a',   // blue
+            '#34a0a4',  // purple
+            '#168aad',  // grey
+            '#1a759f',   // red
+            '#1e6091',   // orange
+            '#184e77',   // yellow
+            '#21325E'   // green
+
+            // Add more colors if needed
+        ];
+
+
+
+
+
+
+        Papa.parse('https://raw.githubusercontent.com/sharonhong/diz_hsy/main/industry_70_90_new2.csv', {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                var data = results.data;
+                var labels = ['pt1970', 'pt1980', 'pt1990'];
+                var datasets = data.map(function(row, index) {
+                    return {
+                        label: row.Industry,
+                        data: labels.map(function(label) { return row[label]; }),
+                        backgroundColor: colors[index % colors.length]
+                    };
+                });
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        // plugins: {
+                        //     title: {
+                        //         display: true,
+                        //         text: 'Data Sources: U.S. Census: 1970 Pop4A, 1980 STF3A, 1990 STF3A.'
+                        //     }
+                        // },
+                        plugins: {
+            legend: {
+                display: true,
+                position:'right',
+                labels: {
+                    // This more specific font property overrides the global property
+                    font: {
+                        size: 9
+                    }
+                }
+            }
+        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                stacked: true,
+                                ticks: {
+                                    font: {
+                                    size: 16
+                                    }},
+                                title: {
+                                    display: true,
+                                    text: 'Percentage (%)',
+                                    font: {
+                    size: 18
+                }
+                                }
+                            },
+                            x: {
+                                stacked: true,
+                                ticks: {
+                                    font: {
+                                    size: 16
+                                    }},
+                                title: {
+                                    display: true,
+                                    text: 'Year',
+                                    font: {
+                    size: 18
+                }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

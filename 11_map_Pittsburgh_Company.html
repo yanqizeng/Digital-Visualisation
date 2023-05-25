@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Company and Cultural District</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/dimple/2.3.0/dimple.latest.min.js"></script> 
+
+
+
+
+<!-- Title and Data Sources -->
+<style>
+
+    body { margin: 0; padding: 0; }
+
+    #title {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 15px;
+        margin-left: 15px;
+        opacity: 0.8;
+    }
+
+    #title h2 {
+        line-height: 24px;
+        margin: 0;
+    }
+
+    #title p.credit {
+       margin: 10px 0 0 0;
+       padding: 0;
+    }
+    
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; };
+
+
+    
+</style>
+
+<style>   
+        
+    #chartContainer {
+        position: absolute;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+        border-radius: 5px;
+        width: 555px; 
+        margin-top: 100px; 
+        margin-left: 15px; 
+        margin-bottom: 30px; 
+        padding: 10px;
+        opacity: 0.8;
+    }
+   
+    #charttitle {font: bold 15px  Verdana, sans-serif;}
+
+    #charttitle h1 {font: regular 9px  Verdana, sans-serif;}
+
+    #information {font: regular 10px  Verdana, sans-serif;}
+
+   
+</style>
+
+
+<style>   
+
+    .map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    position: absolute;
+    width: 15%;
+    top: 300px;
+    left: 6px;
+    padding: 10px;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #ffffff;
+    box-shadow:0 1px 2px rgba(169, 164, 164, 0.2);
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+</style>
+
+
+
+</head>
+
+<body>
+    <!-- Title and Data Sources -->
+    <div id="map"></div>
+    
+    <div id="title">
+        <h2>Company and Cultural District</h2>
+         <!-- <p class="credit">Journey Plans Data: <a href="https://api.tfl.gov.uk/">Transport for London API</a>.</p> -->
+         <p class="credit">Company Data: <a href="https://www.brookings.edu/wp-content/uploads/2017/09/pittsburgh_appendix-a.pdf">Performance of Pittsburgh's leading 
+          advanced industries</a>.</p>
+    </div> 
+
+    <!-- Line chart Title and Content -->
+
+    <div id="chartContainer">
+        <h3 id="mousemovetitle">Company name</h3>
+        <h id="information">Basic information about the company<br></h>
+    </div>
+
+    <!-- Ring Chart -->
+    <!-- <div id="chartContainer2" style="height:250px; max-width:1500px;"></div> -->
+    <!-- <div id="chartContainer2"></div> -->
+
+
+
+    <!-- Switch -->
+    <div class='map-overlay'>
+        <div class='map-overlay-inner'>
+            <table><tr><td>
+                  <input type="radio" name="layers" id="layer0" value="Culture" checked><label>Cultural District &nbsp; &nbsp;<br></label>
+                  <input type="radio" name="layers" id="layer1" value="AllCompanies" checked><label>All Companies &nbsp; &nbsp;<br></label>
+                  <input type="radio" name="layers" id="layer2" value="Blood"><label>Blood and organ banks <br></label>
+                  <input type="radio" name="layers" id="layer3" value="Commercial"><label>Commercial banking <br></label>
+                  <input type="radio" name="layers" id="layer4" value="Custom"><label>Custom computer programming <br></label>
+                  <input type="radio" name="layers" id="layer5" value="Electromedical"><label>Electromedical devices <br></label>
+                  <input type="radio" name="layers" id="layer6" value="Engineering"><label>Engineering services <br></label>
+                  <input type="radio" name="layers" id="layer7" value="Managing"><label>Managing offices <br></label>
+                  <input type="radio" name="layers" id="layer8" value="Natural"><label>Natural gas extraction <br></label>
+                  <input type="radio" name="layers" id="layer9" value="Petroleum"><label>Petroleum chemical products <br></label>
+                  <input type="radio" name="layers" id="layer10" value="Railroad"><label>Railroad rolling stock mfg. <br></label>
+                  <input type="radio" name="layers" id="layer11" value="Relay"><label>Relay and industrial control manufacturing <br></label>
+                  <input type="radio" name="layers" id="layer12" value="Telephone"><label>Telephone equipment <br></label>
+                 </td>
+                 </tr>
+    </div>
+    </div>
+
+
+    
+<script>
+    
+// 1 BASIC MAP: Pittsburgh
+  // Setting background
+  mapboxgl.accessToken = 'pk.eyJ1IjoieWFucWl6ZW5nIiwiYSI6ImNsZGJsOHIyaTAxb2wzbmxqY2V5a2xlYmYifQ.8ovksydQmOUs26VjPcy3Mg';
+
+        // Load a new map in the 'map' HTML div
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/yanqizeng/clhnccqhn01p201qyemup7a4d',
+            center: [-80.09, 40.45], // starting position [lng, lat]
+            zoom: 9.5 // starting zoom
+        });
+    
+  map.addControl(new mapboxgl.NavigationControl()); //Adds zoom control
+
+
+  map.on('load', function() {
+
+
+
+  // Add points of Pittsburgh Companies
+
+  map.addLayer({         // Add the circle layer. London attractions
+            id: 'AllCompanies',   //Custom name
+            type: 'circle',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.c695tgxo' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'Pittsburgh_all_company-5s44ai', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'circle-color': "#EE82EE",
+                'circle-stroke-width': {
+                    stops: [[8, 0.5], [13, 3], [16, 4]]  // The width properties change at different zoom levels, getting thicker
+                },
+                'circle-stroke-color': '#C71585',
+                'circle-stroke-width': 0.7,
+                'circle-stroke-opacity': 0.3,
+                'circle-opacity':1,
+
+                    
+                'circle-radius': {
+                        property: 'Establishe',
+                        stops: [[8, 0.5], [13, 3], [16, 4]] 
+
+                    }}
+
+        });
+    
+
+  // Add the name of the Company
+  map.addLayer({          
+        'id': 'labels',
+        'type': 'symbol',        
+        'source': 'AllCompanies',  // Same as above id
+        'source-layer': 'Pittsburgh_all_company-5s44ai', // name of tilesets
+        'layout': {
+            'text-field': '{Company}',   // Based on the data in the column above
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': {
+                stops: [[8, 15], [12.5, 17], [12.6, 20], [16, 26]]
+            }
+        },
+        'paint': {
+            'text-color': 'rgba(0,0,0,0.6)'
+        }
+    });
+
+
+  // Add popup
+  var popup = new mapboxgl.Popup({  // Create a popup, but don't add it to the map yet.
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    map.on('mouseenter', 'AllCompanies', function(e) {
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = 'pointer';
+
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = "<h2>" + e.features[0].properties.Company + "</h2><p>Established: " + e.features[0].properties.Establishe +"</h2><p>Cluster: " + e.features[0].properties.cluster + "</p><p>Types of industry activities : " + e.features[0].properties.Types ;
+
+            popup
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map);
+
+        });
+
+
+    map.on('mouseleave', 'AllCompanies', function() {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+    });     
+
+
+
+
+  // Add points of Culture
+
+  map.addLayer({         // Add the circle layer. London attractions
+            id: 'Culture',   //Custom name
+            type: 'circle',
+            source: {
+              type: 'vector',
+              url: 'mapbox://yanqizeng.d78e1y58' // My Mapbox tileset Map ID
+            },
+            'source-layer': 'Culture-cqbb23', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'circle-color': "#FF9494",
+                'circle-stroke-width': {
+                    stops: [[8, 0.5], [13, 3], [16, 4]]  // The width properties change at different zoom levels, getting thicker
+                },
+                'circle-stroke-color': '#FDFF00',
+                'circle-stroke-width': 0.7,
+                'circle-stroke-opacity': 0.3,
+                'circle-opacity':1,
+
+                    
+                'circle-radius': 8}
+
+        });
+    
+ 
+  // Add the name of the Culture
+  map.addLayer({          
+        'id': 'labels2',
+        'type': 'symbol',        
+        'source': 'Culture',  // Same as above id
+        'source-layer': 'Culture-cqbb23', // name of tilesets
+        'layout': {
+            'text-field': '{Field1}',   // Based on the data in the column above
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': {
+                stops: [[8, 15], [12.5, 17], [12.6, 20], [16, 26]]
+            }
+        },
+        'paint': {
+            'text-color': 'rgba(0,0,0,0.6)'
+        }
+    });
+
+
+  // Add popup Culture
+  var popup = new mapboxgl.Popup({  // Create a popup, but don't add it to the map yet.
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    map.on('mouseenter', 'Culture', function(e) {
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = 'pointer';
+
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = "<h2>" + e.features[0].properties.Field1 ;
+
+            popup
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map);
+
+        });
+
+
+    map.on('mouseleave', 'Culture', function() {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+    });     
+
+
+
+
+
+
+
+
+// 2 MAP WITH FILTER: the category
+  // ---------   Add the label layer   ----------
+    map.addLayer({
+        id: 'Blood and organ banks',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.2m0dakye' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComBlood-cizk3c', // name of tileset
+        paint: {'circle-color': '#00FFCA', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Commercial banking',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.5stne0q8' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComCommercial-8c67zc', // name of tileset
+        paint: {'circle-color': '#FF1493', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Custom computer programming',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.02ba4hcl' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComCustom-4gltmr', // name of tileset
+        paint: {'circle-color': '#4B0082', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Electromedical devices',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.4hf12y46' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComElectromedical-4wv46j', // name of tileset
+        paint: {'circle-color': '#0000FF', 'circle-radius':8}
+    });
+    
+    map.addLayer({
+        id: 'Engineering services',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.9p3pbwmb' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComEngineering-1n6dg4', // name of tileset
+        paint: {'circle-color': '#9932CC', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Managing offices',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.6xvfb6uh' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComManaging-bvj445', // name of tileset
+        paint: {'circle-color': '#7286D3', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Natural gas extraction',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.7ks5dos1' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComNatural-af5fla', // name of tileset
+        paint: {'circle-color': '#00BFFF', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Petroleum chemical products',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.5x91aphp' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComPetroleum-2dwmps', // name of tileset
+        paint: {'circle-color': '#FC4F00', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Railroad rolling stock mfg.',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.6cfwvyvc' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComRailroad-4mduta', // name of tileset
+        paint: {'circle-color': '#FF1493', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Relay and industrial control manufacturing',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.3lrzzjjv' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComRelay-6iq1s8', // name of tileset
+        paint: {'circle-color': '#FF6969', 'circle-radius':8}
+    });
+
+    map.addLayer({
+        id: 'Telephone equipment',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.dlnadum5' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_ComTelephone-aql3k1', // name of tileset
+        paint: {'circle-color': '#FFD700', 'circle-radius':8}
+    });
+
+
+  // ---------   Add the mousemove layer   ----------
+  map.addLayer({
+        id: 'MouseMove',
+        type: 'circle',
+        source: {
+          type: 'vector',
+          url: 'mapbox://yanqizeng.c695tgxo' // Your Mapbox tileset Map ID
+        },
+        'source-layer': 'Pittsburgh_all_company-5s44ai', // name of tileset
+        paint: {'circle-color': '#00FFCA',
+                'circle-opacity':0,}
+    });
+
+
+
+  // -------  Event listener for layer switch  ----------
+
+    document.getElementById("layer0").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',12);
+     map.setPaintProperty('AllCompanies','circle-radius',0);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer1").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',12);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer2").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',12);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer3").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',12);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer4").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',12);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer5").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',12);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer6").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',12);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer7").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',12);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer8").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',12);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer9").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',12);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer10").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',12);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer11").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',12);
+     map.setPaintProperty('Telephone equipment','circle-radius',0);
+    });
+
+    document.getElementById("layer12").addEventListener("click", function(){
+     map.setPaintProperty('Culture','circle-radius',0);
+     map.setPaintProperty('AllCompanies','circle-radius',3);
+     map.setPaintProperty('Blood and organ banks','circle-radius',0);
+     map.setPaintProperty('Commercial banking','circle-radius',0);
+     map.setPaintProperty('Custom computer programming','circle-radius',0);
+     map.setPaintProperty('Electromedical devices','circle-radius',0);
+     map.setPaintProperty('Engineering services','circle-radius',0);
+     map.setPaintProperty('Managing offices','circle-radius',0);
+     map.setPaintProperty('Natural gas extraction','circle-radius',0);
+     map.setPaintProperty('Petroleum chemical products','circle-radius',0);
+     map.setPaintProperty('Railroad rolling stock mfg.','circle-radius',0);
+     map.setPaintProperty('Relay and industrial control manufacturing','circle-radius',0);
+     map.setPaintProperty('Telephone equipment','circle-radius',12);
+    });
+
+});   
+    
+
+//   =========  Mousemove  ==========   
+
+  //   Mouseover event    <<< Topic: Family >>>
+  map.on('mousemove','MouseMove', function(e) {       // This is the main event listner which is triggered when the mouse moves
+          var la = map.queryRenderedFeatures(e.point, {   // This queries whether the mouse is over an object in the LocalAuthorities layer
+            layers: ['MouseMove']
+          });
+
+
+        if (la.length==1) {   // This if statement is run when the mouse is over a local authority
+
+        map.setFilter('lahighlight', ['==','Company',la[0].properties.Company]);  // Filter the lahighlight layer to show the local authority outline
+        console.log(la[0].properties.Company);
+
+        document.getElementById('mousemovetitle').innerHTML = la[0].properties.Company; // Change the name in the top left box to show the local authority name
+        
+        document.getElementById('information').innerHTML = la[0].properties.Informatio+ "<br>";
+
+        console.log(la[0].id);
+        console.log(la);
+
+        } else {
+        map.setFilter('lahighlight', ['==','Company','null']);
+        console.log('No features');
+        document.getElementById('mousemovetitle').innerHTML = "Company Name" ;
+        document.getElementById('information').innerHTML = "Basic information about the company: "+ "<br>";
+
+        }
+
+        });
+
+
+</script>
+
+
+
+</body>
+</html>
+
+

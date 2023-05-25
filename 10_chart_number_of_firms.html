@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The number of firms by industry 2017_Treemap</title>
+
+</head>
+
+<style>    
+    #chartContainer {width: 750px; margin: auto; margin-top: 40px;  }
+    #chartContainer p {margin-left: 30px; margin-bottom: 0px; margin-top: 0; padding: 0;}
+    #charttitle {font: bold 22px  Verdana, sans-serif;}
+
+</style>
+
+<body>
+    <div id="chartContainer">
+      
+        <p id="charttitle">The number of firms by industry 2017</p>
+        <p id="chartsubhead">Data Source: United States Census Bureau, Summary Statistics for the U.S. 2017.</p>
+        
+    
+    </div>
+    
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <div id="chart_div" style="width: 700px; height: 450px; margin: 0px auto;"></div>
+
+
+    <script>
+    google.charts.load('current', {'packages':['treemap']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+
+var data = google.visualization.arrayToDataTable([
+    ['Location', 'Parent', 'Number of firms', 'Market increase/decrease (color)'],
+    ['Industry', null, 0, 0],
+    ['Utilities', 'Industry', 54, 54],
+    ['Manufacturing', 'Industry', 2220, 2220],
+    ['Wholesale trade', 'Industry', 4693, 4693],
+    ['Retail trade', 'Industry', 4620, 4620],
+    ['Transportation and warehousing', 'Industry', 1132, 1132],
+    ['Information', 'Industry', 572, 572],
+    ['Finance and insurance', 'Industry', 2079, 2079],
+    ['Real estate and rental and leasing', 'Industry', 1538, 1538],
+    ['Professional, scientific, and technical services', 'Industry', 5632, 5632],
+    ['Administrative and support and waste management and remediation services', 'Industry', 2701, 2701],
+    ['Educational services', 'Industry', 970, 970],
+    ['Health care and social assistance', 'Industry', 9753, 9753],
+    ['Arts, entertainment, and recreation', 'Industry', 1933, 1933],
+    ['Accommodation and food services', 'Industry', 4329, 4329],
+    ['Other services (except public administration)', 'Industry', 9498, 9498]
+]);
+
+
+      tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
+
+      tree.draw(data, {
+        minColor: '#6cb2c9',
+        midColor: '#f2e893',
+        maxColor: '#ff9400',
+        headerHeight: 0,
+        fontColor: 'black',
+        fontSize: 18,
+        showScale: true,
+        //generateTooltip: showFullTooltip,
+        generateTooltip: showTooltip,
+  showTooltips: true,
+
+      });
+
+      generateTooltip: showFullTooltip // set the generateTooltip option to use the showFullTooltip function
+
+
+//   function showFullTooltip(row, size, value) {
+//     return '<div style="background:#fd9; padding:10px; border-style:solid">' +
+//            '<span style="font-family:Arial;font-size:12px;">' +
+//            data.getValue(row, 0) + ': ' + data.getValue(row, 2) + '</span></div>';
+//   }
+
+  function showTooltip(row, size, value) {
+  return '<div style="background:#fd9; padding:10px; border-style:solid">' +
+    '<span style="font-family:Courier"><b>' + data.getValue(row, 0) +
+    '</b>' +  ': ' + size + '</span><br>' +
+    '</div>';
+}
+
+
+    }
+</script>
+</body>
+</html>

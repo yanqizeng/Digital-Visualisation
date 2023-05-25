@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emissions</title>
+
+</head>
+
+<style>    
+    #chartContainer {width: 840px; margin: auto; margin-top: 50px; }
+    #chartContainer p {margin-left: 0px; margin-bottom: 5px; margin-top: 0; padding: 0;}
+    #charttitle {font: bold 22px  Verdana, sans-serif;}
+
+</style>
+
+<body>
+    <div id="chartContainer">
+      
+        <p id="charttitle">Emissions by Economic Sector, CO2 1990-2020</p>
+        <p id="chartsubhead">Data Source: EPA's annual Inventory of U.S. Greenhouse Gas Emissions and Sinks.</p>
+        
+    
+    </div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(
+        [['Year', 'Industry', 'Electric power industry', 'Transportation', 'Residential', 'Commercial', 'Agriculture'],
+["1990",73.01,108.2,60.4,23.89,25.23,9.2],
+["1991",72.55,107.54,59.52,24.34,25.27,8.68],
+["1992",72.5,108.07,61.71,25.53,25.66,9.26],
+["1993",74.49,110.19,63.49,25.7,24.74,9.17],
+["1994",75.56,106.57,64.47,25.22,26.77,9],
+["1995",76.75,109.76,65.87,24.53,25.93,8.55],
+["1996",77.97,114.66,66.39,25.98,27.28,9.06],
+["1997",78.99,116.44,68.05,24.48,25.93,8.42],
+["1998",76.96,119.22,69.54,20.78,23.72,8.67],
+
+["1999",74.34,115.18,71.46,22.91,24.05,8.91],
+["2000",73.67,123.02,73.38,25.23,23.56,9.03],
+["2001",70.61,112.52,72.8,24.5,23.44,9.05],
+["2002",68.83,120.39,72.86,23.43,23.1,9.23],
+["2003",69.31,120.99,73.15,26.16,23.82,9.27],
+["2004",72.55,124.15,73.08,25.39,23.12,9.65],
+["2005",69.53,129.21,73.67,23.65,22.69,9.13],
+["2006",70.64,128.77,72.46,20.56,21.35,9.94],
+["2007",65.67,131.09,71.75,21.87,21.87,9.65],
+["2008",68.64,125.6,68.76,24.1,20.58,9.26],
+
+["2009",62.89,118.17,67.15,20.32,20.08,9.45],
+["2010",66.05,124.68,67.41,20.88,17.26,10.28],
+["2011",63.78,118.81,67.29,20.42,16.81,10.55],
+["2012",66.87,111.49,64.71,17.58,15.24,10.36],
+["2013",76.01,110.53,64.28,20.61,16.98,10.38],
+["2014",77.05,103.22,64.92,22.96,16.71,10.6],
+["2015",78.31,91.97,63.07,21.11,17,9.9],
+["2016",75.44,85.88,62.39,18.6,16.07,9.92],
+["2017",77.76,80.03,63.3,18.34,16.2,9.94],
+["2018",80.6,77.66,62.61,21.9,17,10.08],
+
+["2019",83.23,78.12,63.11,20.06,17.03,10.08],
+["2020",76.88,73.01,54.44,18.34,15.87,9.59]]);
+
+        // var options = {
+        //   title: 'Emissions by Economic Sector, CO2',
+        //   isStacked: 'false',
+        //   hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}, ticks: [1990, 1995, 2000, 2005, 2010, 2015, 2020]},
+        //   vAxis: {title: 'CO2 Emission', minValue: 0},
+        // };
+        //ticks: [1990, 1995, 2000, 2005, 2010, 2015, 2020]
+
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        // chart.draw(data, options);
+
+        chart.draw(data, 
+        {
+          //title: 'Emissions by Economic Sector, CO2',
+          isStacked: 'relative',
+          hAxis: {title: 'Year',  
+                 //ticks: [1990, 1995, 2000, 2005, 2010, 2015, 2020],
+                  titleTextStyle: {color: '#333',fontSize: 20, italic: false}
+                  },
+          vAxis: {title: 'CO2 Emission', titleTextStyle: {color: '#333',fontSize: 20, italic: false},  minValue: 0},
+          chartArea: {
+                        top: 20, // 调整顶部边距
+                        left: 80, // 调整左侧边距
+                        right: 250, // 调整右侧边距
+                        bottom: 70 // 调整底部边距
+                    }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 75%; height: 450px; margin: 0px auto;"></div>
+  </body>
+
+</script>
+</body>
+</html>

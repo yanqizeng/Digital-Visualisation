@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employment Data Visualization</title>
+    <style>
+        #chartContainer {width: 840px; margin: auto; margin-top: 40px;  }
+        #chartContainer p {margin-left: 0px; margin-bottom: 0px; margin-top: 0; padding: 0;}
+        #charttitle {font: bold 25px  Verdana, sans-serif;}
+
+        /* Set the body to full height and allow scrolling
+        body {
+            height: 100%;
+            overflow: auto;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Set the width of the canvas wrapper */
+        /* .chart-container {
+            width: 55%;
+        } */
+        /* Center the title and subtitle */
+        /* .title-container {
+            text-align: center;
+            padding: 20px;
+        } */ 
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="chartContainer">
+        <p id="charttitle">Manufacturing and non-manufacturing employment in Pittsburgh compared to U.S.</p>
+        <p id="chartsubhead">Data Source: U.S. Bureau of Economic Analysis 1997, Regional Economic Information System</p>
+    </div>
+
+    <!-- <div class="title-container">
+        <h1 style="font-size: 24px; font-weight: bold;">Manufacturing and non-manufacturing employment in the Pittsburgh Region compared to US</h1>
+        <h2 style="font-size: 16px; ">Data Source: U.S. Bureau of Economic Analysis 1997, Regional Economic Information System</h2>
+    </div> -->
+    <!-- <div style="width: 60%; margin: 0 auto;"> -->
+    <div>
+        <canvas id="chart" style="width: 70%; margin: 0 auto; margin-top: -130px"></canvas>
+    </div>
+
+<script>
+    d3.csv("https://raw.githubusercontent.com/Jenna27/0003/main/data55.csv").then(function(data) {
+        var labels = data.map(function(row) { return row['Employment']; });
+        var colorIndex = 0;
+        var colors = ['#FFB84C', '#F266AB', '#A459D1']; // Red, Green, Blue
+        var datasets = Object.keys(data[0]).filter(key => key !== 'Employment').map(function(year) {
+            var color = colors[colorIndex % colors.length];
+            colorIndex += 1;
+            return {
+                label: year,
+                data: data.map(function(row) { 
+                    return parseFloat(row[year].replace('%', '')); 
+                }),
+                borderColor: color,
+                borderWidth: 5, // Make the data line thicker
+                fill: false
+            };
+        });
+
+        var ctx = document.getElementById('chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+            legend: {
+                display: true,
+                position:'right',
+                labels: {
+                    // This more specific font property overrides the global property
+                    font: {
+                        size: 18
+                    }
+                }
+            }
+        },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        grid: {
+                            lineWidth: 4 // Make the grid line thicker
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 18 // Increase the font size
+                            }
+                        },
+                        ticks: {
+                                    font: {
+                                    size: 15
+                                    }}
+                        
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
